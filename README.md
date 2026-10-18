@@ -35,3 +35,60 @@ Findings require contextual analysis and manual verification.
 ## Team
 - Othmane Aliouali
 - Youssef AIT KARROUM
+
+## Laboratory setup completed
+
+The following steps have been completed:
+- Verified Git and Docker CLI availability.
+- Started Docker Desktop with its Linux engine on WSL 2.
+- Successfully executed the hello-world container.
+- Downloaded OWASP Juice Shop v20.3.0.
+- Started the audit container using the image digest.
+- Confirmed startup through container status and application logs.
+
+### Target image
+
+Image tag: `bkimminich/juice-shop:v20.3.0`
+
+Recorded digest:
+`sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27`
+
+The digest fixes the image reference for reproducibility.
+The laboratory currently uses Linux containers on x86_64.
+
+### Reproduce the laboratory
+
+With Docker running, execute:
+
+```powershell
+docker pull bkimminich/juice-shop@sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27
+docker run -d --name juice-shop-audit -p 127.0.0.1:3000:3000 bkimminich/juice-shop@sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27
+```
+
+Open http://localhost:3000 once the application has started.
+The published port is bound to localhost.
+
+### Verify and manage the container
+
+```powershell
+docker ps --filter name=juice-shop-audit
+docker logs --tail 50 juice-shop-audit
+docker stop juice-shop-audit
+docker start juice-shop-audit
+```
+
+Run the creation command only once.
+For an existing stopped container, use `docker start`.
+
+### Known laboratory limitations
+
+Startup logs report unavailable Alchemy and LLM services.
+Related blockchain and chatbot challenges are outside our initial scope.
+Successful startup checks do not demonstrate application security.
+No Trivy or Jit security scans have been performed yet.
+
+### Next steps
+
+- Study the application architecture.
+- Prepare Trivy and record its version.
+- Perform and document the initial security scans.
