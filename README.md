@@ -85,7 +85,26 @@ For an existing stopped container, use `docker start`.
 Startup logs report unavailable Alchemy and LLM services.
 Related blockchain and chatbot challenges are outside our initial scope.
 Successful startup checks do not demonstrate application security.
-No Trivy or Jit security scans have been performed yet.
+The initial Trivy image scan has been completed and its original JSON is
+preserved on this branch. The HIGH/CRITICAL JSON is a separate filtered
+report and does not replace the original.
+
+### Dependency analysis progress
+
+The reports contain 98 initial detections (11 CRITICAL, 27 HIGH,
+49 MEDIUM and 11 LOW) and 38 HIGH/CRITICAL detections. These are detection
+counts, not counts of distinct advisories or confirmed exploitable issues.
+Static analysis documents cover authentication, lodash, sanitize-html,
+crypto-js, decompress/tar, Handlebars and MarsDB. Other installations and
+some lower-severity alerts remain to be reviewed.
+
+See the [detection tracking document](docs/analysis/00-suivi-des-detections.md)
+for every reported installation, severity counts, analysis status, confirmed
+aliases, open questions and suggested next checks. “Analyzed” describes
+documentary progress and does not mean exploitability has been confirmed.
+
+No application changes, dependency updates, new scans or exploitation tests
+were performed during this documentation phase.
 
 ### Next steps
 
