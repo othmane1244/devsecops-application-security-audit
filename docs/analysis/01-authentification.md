@@ -223,6 +223,43 @@ Ces éléments relient le digest de dépôt `cea5…`, le manifeste enfant `linu
 
 La version `0.0.6` est dans l’intervalle détecté, mais le runtime de l’image liée au rapport est Node.js `v24.21.0`, et non Node.js 4.x ou antérieur. Le prérequis de runtime décrit par l’avis n’est donc pas satisfait dans l’image auditée. **L’alerte reste une observation valide du scan, mais le scénario `NSWG-ECO-428` / `GHSA-rvg8-pwq2-xj7q` décrit par l’avis ne paraît pas applicable à ce runtime.** Aucun appel avec argument numérique n’a été vérifié; ce point d’usage reste à documenter, sans modifier cette conclusion sur le prérequis de runtime.
 
+## Détections MEDIUM de `jsonwebtoken` dans le rapport initial
+
+Le rapport initial contient quatre détections MEDIUM supplémentaires, absentes du filtre HIGH/CRITICAL : `CVE-2022-23540` et `CVE-2022-23541` pour chacune des deux installations. Les chemins et versions sont des preuves issues de l’image rapportées par Trivy : copie imbriquée `0.1.0` (vulnérabilités dans `reports/trivy-image-initial.json` à partir des lignes 18239, chemin `juice-shop/node_modules/express-jwt/node_modules/jsonwebtoken/package.json`) et copie racine `0.4.0` (lignes 18538, chemin `juice-shop/node_modules/jsonwebtoken/package.json`). Elles prouvent la détection des versions, pas l’exécution d’un scénario vulnérable.
+
+Les extraits numérotés ci-dessous sont issus des archives publiées npm de [`jsonwebtoken@0.1.0`](https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-0.1.0.tgz) et [`jsonwebtoken@0.4.0`](https://registry.npmjs.org/jsonwebtoken/-/jsonwebtoken-0.4.0.tgz), pas d’une nouvelle extraction de l’image. Les implémentations exactes déclarent respectivement `verify(jwtString, secretOrPublicKey, options, callback)` dans `package/index.js:27–40` et `:33–46`. Elles appellent `jws.verify(jwtString, secretOrPublicKey)`, sans appliquer d’option `algorithms` et sans invoquer une fonction de récupération de clé.
+
+### `CVE-2022-23540` — algorithme par défaut `none`
+
+L’avis officiel [GHSA-qwph-4952-7xr6](https://github.com/auth0/node-jsonwebtoken/security/advisories/GHSA-qwph-4952-7xr6) indique les versions affectées `<=8.5.1`, corrigées en `9.0.0`. Il exige **simultanément** la réception d’un jeton sans signature, l’absence d’algorithmes spécifiés et le passage d’une clé/secrète falsy (`null`, `false` ou `undefined`, par exemple).
+
+| Installation (preuve de l’image) | Source publiée exacte et usage déjà relevé | Prérequis comparés à l’avis |
+|---|---|---|
+| `jsonwebtoken@0.1.0` imbriqué sous `express-jwt` | `index.js:27–40` délègue à `jws.verify(jwtString, secretOrPublicKey)`. `express-jwt@0.1.3` transmet la configuration à ce `verify()` (F-001, `express-jwt/lib/index.js:40–41`); `isAuthorized()` fournit la clé publique RSA issue de `encryptionkeys/jwt.pub`. | Version : **présente**. Pas d’allowlist : **observé** (cette ancienne API ne l’applique pas). Jeton sans signature : **inconnu**. Clé falsy : **non observée** dans la configuration RSA; valeur effectivement chargée au runtime : **non vérifiée séparément**. |
+| `jsonwebtoken@0.4.0` racine | `index.js:33–46` délègue de même à `jws.verify()`. Les appels applicatifs relevés dans `lib/insecurity.ts:189` et `routes/verify.ts:125` passent `publicKey`, provenant de `encryptionkeys/jwt.pub`, sans `algorithms`. | Version : **présente**. Pas d’allowlist : **observé**. Jeton sans signature : **inconnu**. Clé falsy : **non observée** dans la configuration RSA; valeur runtime : **non vérifiée séparément**. |
+
+**Conclusion CVE-2022-23540 :** versions détectées et absence de restriction d’algorithme observée, mais ni jeton sans signature ni clé falsy ne sont établis dans les appels applicatifs relevés. Le mécanisme précis de l’avis n’est **pas confirmé**. Cela ne remplace pas les constats séparés sur l’algorithme provenant du jeton dans les anciennes dépendances `jws`.
+
+### `CVE-2022-23541` — récupération de clé mal implémentée
+
+L’avis officiel [GHSA-hjrf-2m68-5959](https://github.com/auth0/node-jsonwebtoken/security/advisories/GHSA-hjrf-2m68-5959) indique `<=8.5.1`, corrigé en `9.0.0`. Il requiert que l’application prenne en charge les clés symétriques et asymétriques dans `jwt.verify()` à l’aide de **la même fonction de récupération de clé**, mal implémentée au point de permettre une confusion RSA/HMAC (par exemple vérifier HS256 avec une clé publique asymétrique).
+
+| Installation (preuve de l’image) | Source publiée exacte et usage déjà relevé | Prérequis comparés à l’avis |
+|---|---|---|
+| `jsonwebtoken@0.1.0` imbriqué sous `express-jwt` | `index.js:27–40` transmet directement la valeur `secretOrPublicKey` à `jws.verify()`; aucune fonction de récupération n’est appelée. L’usage recensé fournit une clé publique RSA statique. | Version : **présente**. Fonction de récupération commune : **absente** de l’API et des appels observés. Support conjoint des deux types via cette fonction : **non observé**. |
+| `jsonwebtoken@0.4.0` racine | `index.js:33–46` transmet la valeur à `jws.verify()` sans résoudre de fonction. Les appels relevés utilisent la clé RSA statique; l’émission documentée est RS256 avec clé privée RSA. | Version : **présente**. Fonction de récupération commune : **absente** des appels observés. Validation symétrique et asymétrique via cette même fonction : **absente des éléments relevés**. |
+
+**Conclusion CVE-2022-23541 :** les versions sont signalées, mais le prérequis central de l’avis n’apparaît ni dans les implémentations exactes ni dans les consommateurs recensés. Le mécanisme n’est **pas confirmé** dans ces chemins. Conclusion limitée à l’inspection statique; aucun essai de jeton n’a été effectué.
+
+### Synthèse des quatre détections MEDIUM
+
+| Avis | `jsonwebtoken@0.1.0` imbriqué | `jsonwebtoken@0.4.0` racine | Conclusion |
+|---|---|---|---|
+| `CVE-2022-23540` | Version et vérification présentes; aucun algorithme autorisé appliqué; signature entrante inconnue; clé falsy non observée, valeur runtime inconnue. | Même constat; clé RSA configurée, mais valeur runtime non vérifiée. | Conditions cumulatives de l’avis non établies; mécanisme non confirmé. |
+| `CVE-2022-23541` | Version présente; clé RSA statique; pas de fonction de récupération recensée. | Version présente; appels RSA statiques; pas de fonction de récupération recensée. | Prérequis spécifique absent des consommateurs observés; mécanisme non confirmé. |
+
+Le rapport initial comporte **quatre lignes MEDIUM** (deux avis × deux installations); le filtre HIGH/CRITICAL n’en comporte aucune. Elles s’ajoutent aux dix lignes de ce filtre synthétisées ci-dessous et ne démontrent pas une exploitation.
+
 ## Références complémentaires sur les avis
 
 - [NVD — CVE-2020-15084](https://nvd.nist.gov/vuln/detail/CVE-2020-15084) complète les conditions de l’avis `express-jwt` et indique une plage affectée jusqu’à 5.3.3.
