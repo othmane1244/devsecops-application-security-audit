@@ -2,7 +2,7 @@
 
 ## Périmètre et détections
 
-Le rapport Trivy initial inventorie sept installations sous `juice-shop/node_modules` : `file-type@16.5.4` à la racine, `11.1.0` sous `download`, `3.9.0` sous `decompress-unzip`, `4.4.0` sous `archive-type`, deux copies `5.2.0` sous `decompress-tar` et `decompress-targz`, et `6.2.0` sous `decompress-tarbz2`. Le chemin Trivy de chaque copie est reproduit ci-dessous. Une seule détection de vulnérabilité concerne `file-type` : `CVE-2026-31808`, MEDIUM, sur la copie racine `16.5.4` (`juice-shop/node_modules/file-type/package.json`), état Trivy `fixed`, version corrigée annoncée `21.3.1`. Le rapport filtré HIGH/CRITICAL n’a aucune détection `file-type`.
+Le rapport Trivy initial inventorie sept installations sous `juice-shop/node_modules` : `file-type@16.5.4` à la racine, `11.1.0` sous `download`, `3.9.0` sous `decompress-unzip`, `4.4.0` sous `archive-type`, deux copies `5.2.0` sous `decompress-tar` et `decompress-targz`, et `6.2.0` sous `decompress-tarbz2`. Le rapport signale une détection `CVE-2026-31808`, MEDIUM, sur la copie racine `16.5.4` (`juice-shop/node_modules/file-type/package.json`). Le champ `Status: fixed` et `FixedVersion: 21.3.1` indiquent qu’une version correctrice est publiée; ils ne signifient pas que l’installation est déjà corrigée : `InstalledVersion` reste `16.5.4`, dans la plage affectée. Le rapport HIGH/CRITICAL n’a aucune détection `file-type`.
 
 | Version | Chemin de paquet dans le rapport initial | Relation de dépendance établie par le chemin |
 | --- | --- | --- |
@@ -32,7 +32,7 @@ Le flux pertinent pour `CVE-2026-31808` est donc l’upload multipart en mémoir
 
 | Élément | État des preuves |
 | --- | --- |
-| Version affectée installée | Confirmée par le rapport initial : `16.5.4`, chemin racine; résultat Trivy `fixed`, CVE MEDIUM. |
+| Version affectée installée | Confirmée par le rapport initial : `InstalledVersion: 16.5.4`, chemin racine; CVE MEDIUM. Le champ Trivy `Status: fixed` se rapporte à la disponibilité du correctif (21.3.1), pas à l’installation détectée. |
 | Fonction vulnérable disponible | Confirmée dans `file-type@16.5.4/core.js` : parsing ASF et boucle vulnérable (extrait 1). |
 | Octets contrôlables atteignant la fonction | Chemin d’upload multipart publié et limite 200 000 octets confirmés; appel précis du handler de profil au parseur non confirmé faute d’accès à son fichier source dans cette vérification. |
 | Contrôle de type / traitement d’erreur du handler | Inconnu pour la copie de l’image; ne pas inférer depuis l’extension seule de `/file-upload`. |
@@ -40,7 +40,7 @@ Le flux pertinent pour `CVE-2026-31808` est donc l’upload multipart en mémoir
 
 ## Conclusion
 
-Le mécanisme vulnérable est présent dans les sources publiées de `file-type@16.5.4`, et le rapport initial confirme l’installation de cette version dans l’image analysée. L’application publiée expose un upload de fichier en mémoire limité à 200 000 octets, mais le raccord précis entre les octets reçus et le parseur ASF doit être confirmé dans le gestionnaire de profil et dans les fichiers de l’image. La détection est donc valide; l’exposition effective au chemin vulnérable et une exploitation ne sont pas démontrées. Les anciennes copies listées par Trivy sont hors de la plage de versions de cet avis.
+Le mécanisme vulnérable est présent dans les sources publiées de `file-type@16.5.4`, et le rapport initial confirme l’installation de cette version dans l’image analysée. Le statut Trivy `fixed` ne veut pas dire que l’image est corrigée : la version détectée reste affectée et la version fixée annoncée est `21.3.1`. L’application publiée expose un upload de fichier en mémoire limité à 200 000 octets, mais le raccord précis entre les octets reçus et le parseur ASF doit être confirmé dans le gestionnaire de profil et dans les fichiers de l’image. La détection du composant vulnérable est confirmée; l’exposition effective au chemin vulnérable et une exploitation ne sont pas démontrées. Les anciennes copies listées par Trivy sont hors de la plage de versions de cet avis.
 
 ## Limites de vérification
 
