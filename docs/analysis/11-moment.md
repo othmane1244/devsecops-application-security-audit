@@ -100,3 +100,7 @@ La conclusion combine deux niveaux de preuve : Trivy établit les paquets/versio
 ## Limites
 
 Les chemins et versions proviennent des rapports Trivy; les arêtes et comportements viennent des manifestes/archives npm publiés et du code source Juice Shop v20.3.0. Ce code source publié correspond au tag applicatif visé mais ne constitue pas une extraction des fichiers du conteneur. Le démon Docker était indisponible (pipe `dockerDesktopLinuxEngine` absent), donc aucun fichier JavaScript réellement contenu dans l’image n’a été lu ou comparé. Le contenu/configuration runtime et les modules chargés dynamiquement ne sont pas établis. Aucun changement applicatif, nouveau scan, requête de test ni test d’exploitation n’a été effectué.
+
+## Complément Docker postérieur — 28 octobre 2026
+
+Le moteur Docker est désormais accessible; les 24 empreintes de couches de l’image locale Juice Shop correspondent à celles du rapport initial, bien que l’ID d’image diffère. Le conteneur correspondant est arrêté. Cette vérification ciblée n’a pas extrait les fichiers Moment de l’image ni établi une configuration/runtime passé; les conclusions ci-dessus sur Moment restent fondées sur les rapports et sources publiées, non sur le code Moment réellement chargé.

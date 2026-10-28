@@ -16,7 +16,7 @@ Juice Shop
                └─ decode-uri-component@0.2.2
 ```
 
-Les versions et chemins des paquets signalés viennent des rapports Trivy. Les relations de dépendance et les appels ci-dessous viennent des manifests et sources publiés aux versions précises; le daemon Docker étant indisponible, les fichiers embarqués n’ont pas été extraits pour contrôler directement ces relations dans l’image.
+Les versions et chemins des paquets signalés viennent des rapports Trivy. Les relations de dépendance et les appels ci-dessous viennent des manifests et sources publiés aux versions précises; Docker était indisponible lors de cette analyse, donc les fichiers embarqués n’avaient pas été comparés directement. Le contrôle ultérieur du 28 octobre a confirmé les 24 couches de l’image, mais n’a pas extrait cette copie de `decode-uri-component`.
 
 ## Avis officiel et prérequis
 
@@ -68,4 +68,4 @@ La présence d’une version signalée vulnérable et du mécanisme de décodage
 5. Juice Shop v20.3.0 [`lib/utils.ts`](https://github.com/juice-shop/juice-shop/blob/v20.3.0/lib/utils.ts#L9-L113), téléchargement; [`lib/startup/customizeApplication.ts`](https://github.com/juice-shop/juice-shop/blob/v20.3.0/lib/startup/customizeApplication.ts#L10-L87), valeurs de configuration, contrôle `isUrl` et appels; [`server.ts`](https://github.com/juice-shop/juice-shop/blob/v20.3.0/server.ts#L711-L738), appel au démarrage; [`config/default.yml`](https://github.com/juice-shop/juice-shop/blob/v20.3.0/config/default.yml), valeurs locales par défaut.
 6. [`download@8.0.0`](https://github.com/kevva/download/tree/v8.0.0), appel `got.stream(uri, opts)` et dépendance Got. [`got@8.3.2/index.js`](https://github.com/sindresorhus/got/blob/v8.3.2/index.js), wrapper cacheable et option de cache par défaut. Voir aussi [analyse 09](09-http-cache-semantics.md), qui établit que cache désactivé ne supprime pas tout le traitement en amont.
 
-Les preuves d’installation et de chemin proviennent des rapports; les éléments de code applicatif proviennent de sources publiées taggées, et ceux des bibliothèques de leurs tags/commit exacts. Faute d’accès au daemon Docker, la présence des fichiers et la configuration runtime exacte de l’image n’ont pas été vérifiées indépendamment. Aucun scan, test ou test d’exploitation n’a été exécuté.
+Les preuves d’installation et de chemin proviennent des rapports; les éléments de code applicatif proviennent de sources publiées taggées, et ceux des bibliothèques de leurs tags/commit exacts. Le Docker Engine est maintenant accessible et les couches de l’image correspondent au rapport, mais cette vérification ciblée n’a pas contrôlé les octets du paquet ni la configuration runtime. Le conteneur existant est arrêté; aucun comportement d’exécution n’est établi. Aucun scan, test ou test d’exploitation n’a été exécuté.

@@ -61,7 +61,7 @@ La détection du composant vulnérable est fondée : la copie signalée est `8.3
 
 ## Limites de vérification
 
-Le rapport initial prouve la version et le chemin de paquet inventoriés, mais le daemon Docker demeure indisponible; les manifestes, le code et la configuration effectifs de l’image n’ont donc pas été extraits ou comparés directement. Les preuves des appels applicatifs proviennent des sources publiées au tag Juice Shop v20.3.0. L’analyse 09 confirme déjà la chaîne `download@8.0.0 → got@8.3.2 → cacheable-request@2.1.4`; sa conclusion sur le cache ne remplace pas l’examen des redirections mené ici. Aucun scan, test, requête de test ou test d’exploitation n’a été effectué.
+Le rapport initial prouve la version et le chemin de paquet inventoriés. Lors de cette analyse, le daemon Docker était indisponible; les manifestes, le code et la configuration de l’image n’ont donc pas été extraits ou comparés directement. Le contrôle ultérieur du 28 octobre a rendu Docker accessible et confirmé l’égalité des 24 DiffIDs avec le rapport, mais n’a pas relu les fichiers Got ni vérifié la configuration runtime. Les preuves des appels applicatifs de cette fiche proviennent toujours des sources publiées au tag Juice Shop v20.3.0. L’analyse 09 confirme déjà la chaîne `download@8.0.0 → got@8.3.2 → cacheable-request@2.1.4`; sa conclusion sur le cache ne remplace pas l’examen des redirections mené ici. Aucun scan, test, requête de test ou test d’exploitation n’a été effectué.
 
 ## Extraits numérotés
 
