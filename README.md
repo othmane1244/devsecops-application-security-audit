@@ -4,6 +4,10 @@ Guide reproductible pour auditer OWASP Juice Shop avec Trivy et Jit,
 analyser les constats, appliquer des corrections ciblées et vérifier
 leurs effets.
 
+## État du projet
+
+Les contrôles initiaux Trivy sont documentés. Le rapport de vulnérabilités comporte 98 occurrences (11 CRITICAL, 27 HIGH, 49 MEDIUM et 11 LOW); le rapport filtré regroupe les 38 occurrences CRITICAL/HIGH. Le contrôle distinct de mauvaises configurations compte 66 occurrences dans l’arbre Juice Shop, dont 48 dans des exemples pédagogiques. Ces comptes ne représentent ni des risques tous applicables ni des exploitations confirmées. Les contrôles de secrets ont également été réalisés; leurs résultats partageables sont expurgés. L’audit reste ouvert.
+
 ## Objectif et périmètre
 
 - Application cible : OWASP Juice Shop.
@@ -16,6 +20,14 @@ leurs effets.
 Juice Shop est une application tierce. Le laboratoire porte sur la
 méthode d’audit, l’analyse, les corrections ciblées et l’automatisation.
 
+Image locale auditée : `bkimminich/juice-shop:v20.3.0`, Linux/amd64,
+24 couches. Docker indique localement l’ID/RepoDigest
+`sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27`.
+Le digest de configuration OCI associé au rapport initial est différent
+(`sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c`),
+malgré les couches communes. Cette limite d’identité est détaillée dans
+les [analyses](docs/analysis/20-bilan-scan-initial.md) et le [rapport SBOM](docs/sbom/README.md).
+
 ## 1. Récupérer le dépôt
 
 Dans PowerShell :
@@ -25,17 +37,10 @@ git clone https://github.com/othmane1244/devsecops-application-security-audit.gi
 cd devsecops-application-security-audit
 ```
 
-Utiliser la branche `main`, qui contient ce guide et le plan d’action.
-Le rapport du premier scan a été conservé sur la branche
-`docs/project-readme` ; pour le consulter :
-
-```powershell
-git switch docs/project-readme
-```
-
-Pour refaire le laboratoire depuis `main`, revenir à `main` et suivre
-les étapes ci-dessous. Ne pas remplacer le rapport initial lors des
-contre-audits : utiliser un nouveau nom de fichier.
+Utiliser la branche `main`, qui contient ce guide, le plan d’action,
+les rapports initiaux et les fiches d’analyse. Pour refaire le laboratoire,
+suivre les étapes ci-dessous. Ne pas remplacer le rapport initial lors
+des contre-audits : utiliser un nouveau nom de fichier.
 
 ## 2. Vérifier les outils
 
@@ -202,11 +207,37 @@ Aucune correction n’a encore été appliquée.
 2. Examiner le code qui utilise la première dépendance concernée.
 3. Rédiger les fiches de constat et justifier les priorités.
 4. Vérifier l’accès à Jit et les contrôles disponibles.
-5. Compléter les analyses : secrets, configurations et SBOM.
-6. Corriger un nombre limité de constats, reconstruire l’image et
-   effectuer le contre-audit.
-7. Ajouter les contrôles CI/CD et les tests fonctionnels.
-8. Envisager AuditTrace après la réalisation du socle.
+5. Poursuivre la vérification de l’applicabilité des constats et des
+   questions ouvertes sur l’identité de l’image et le parsing.
+6. Examiner les résultats statiques de configuration au regard des
+   preuves de déploiement réellement disponibles.
+7. Après décision de périmètre, planifier les corrections ciblées, la
+   reconstruction et les contre-audits correspondants.
+8. Étudier l’automatisation CI/CD et AuditTrace après le socle.
+
+## État des contrôles et documentation
+
+Le rapport initial contient 98 détections de vulnérabilités (11 CRITICAL,
+27 HIGH, 49 MEDIUM et 11 LOW). Le rapport filtré contient 38 occurrences
+CRITICAL/HIGH. Ces nombres décrivent des détections, pas des avis distincts
+ni une applicabilité confirmée. Le [suivi des détections](docs/analysis/00-suivi-des-detections.md),
+le [bilan du scan initial](docs/analysis/20-bilan-scan-initial.md) et la
+[synthèse des risques](docs/analysis/21-synthese-des-risques.md) détaillent
+les preuves, limites et vérifications restantes. L’analyse d’authentification
+est dans [01-authentification.md](docs/analysis/01-authentification.md).
+
+Le SBOM CycloneDX est disponible dans
+[reports/sbom/juice-shop-initial.cdx.json](reports/sbom/juice-shop-initial.cdx.json);
+sa méthode et ses limites sont décrites dans [docs/sbom/README.md](docs/sbom/README.md).
+Les contrôles de secrets et de configuration ont des rapports partageables
+dans [docs/secrets/rapport-partageable.md](docs/secrets/rapport-partageable.md) et
+[docs/misconfigurations/rapport-partageable.md](docs/misconfigurations/rapport-partageable.md).
+Le contrôle de configuration compte 66 constats dans l’arbre Juice Shop,
+dont 48 dans des exemples pédagogiques ; aucun de ces fichiers ne prouve un
+déploiement. Les résultats de secrets sont expurgés et les sorties brutes
+restent hors du dépôt. La préparation de Jit est décrite dans
+[docs/jit/README.md](docs/jit/README.md) ; aucune connexion ni analyse Jit
+n’a été lancée.
 
 ## Principes d’interprétation
 
