@@ -103,6 +103,10 @@ for every reported installation, severity counts, analysis status, confirmed
 aliases, open questions and suggested next checks. “Analyzed” describes
 documentary progress and does not mean exploitability has been confirmed.
 
+The SBOM phase is documented in the [SBOM guide](docs/sbom/README.md). The
+CycloneDX generation is currently blocked because Docker Engine is inaccessible
+and Trivy is not available locally; no SBOM artifact is claimed.
+
 No application changes, dependency updates, new scans or exploitation tests
 were performed during this documentation phase.
 
