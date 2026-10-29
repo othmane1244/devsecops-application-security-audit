@@ -3,7 +3,7 @@
 Academic security audit of OWASP Juice Shop.
 
 ## Status
-Planning and laboratory preparation. No scans completed yet.
+Initial vulnerability, secret and misconfiguration checks have been run. Findings are being reviewed; applicability and deployment are not implied by static results.
 
 ## Objectives
 - Scan dependencies, container images, secrets and configurations.
@@ -18,7 +18,7 @@ https://github.com/juice-shop/juice-shop
 
 Juice Shop is a third-party application.
 Our work covers audit methodology, analysis, targeted fixes and automation.
-The audited version will be recorded during laboratory preparation.
+The local audit image is `bkimminich/juice-shop:v20.3.0` (`sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27`, Linux/amd64). The image identity differs from the configuration digest recorded in the initial vulnerability report; see the audit documentation for the limitation.
 
 ## Methodology
 1. Prepare a reproducible local laboratory.
@@ -114,12 +114,18 @@ are documented in the [secret audit method](docs/secrets/README.md) and
 [shareable report](docs/secrets/rapport-partageable.md). Raw outputs remain
 outside the repository.
 
-No application changes, dependency updates, vulnerability scans or exploitation
-tests were performed in this stage. The secret-only checks are summarized in
-the linked report above.
+The Trivy misconfiguration controls have also been run for the worktree and
+the extracted `/juice-shop` files. The laboratory worktree contained no
+Dockerfile, Terraform or Kubernetes target files. The Juice Shop source tree
+produced 66 findings; 48 are in Terraform challenge examples and 18 are in
+shipped infrastructure source files. These are static source findings and do
+not establish deployment. Compose and generic YAML are outside this scan's
+coverage. See the [misconfiguration method](docs/misconfigurations/README.md)
+and [shareable report](docs/misconfigurations/rapport-partageable.md). Raw
+JSON and logs remain outside the repository.
 
 ### Next steps
 
-- Study the application architecture.
-- Prepare Trivy and record its version.
-- Perform and document the initial security scans.
+- Review static infrastructure findings against actual deployment evidence.
+- Resolve the remaining parsing and image-identity questions.
+- Continue analysis of unreviewed vulnerability detections and prioritize follow-up checks.

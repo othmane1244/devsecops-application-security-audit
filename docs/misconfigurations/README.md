@@ -1,6 +1,6 @@
 # Préparation du contrôle des mauvaises configurations
 
-**Statut : préparation et inventaire seulement. Aucun scan Trivy n’a été exécuté dans cette étape.**
+**Statut : contrôles exécutés le 2026-10-29 UTC.** Les résultats détaillés et les limites figurent dans le [rapport partageable](rapport-partageable.md). Aucun démarrage d’application ni déploiement n’a été effectué.
 
 ## Objectif et périmètres
 
@@ -26,11 +26,11 @@ Inventaire fait à partir des chemins, sans afficher ni analyser les valeurs des
 
 ## Outil et capacités vérifiés
 
-Trivy **0.76.0** a été vérifié depuis l’image Docker locale, sans téléchargement (`docker run --pull=never ... --version`). L’aide de `trivy config --help` et `trivy fs --help` confirme notamment les options `--misconfig-scanners`, `--skip-check-update`, `--format`, `--output`, `--skip-dirs`, `--skip-files`, `--quiet`, `--disable-telemetry` et `--skip-version-check`. Aucun scan n’a été lancé.
+Trivy **0.76.0** a été vérifié depuis l’image Docker locale, sans téléchargement (`docker run --pull=never ... --version`). Son image utilisée porte le digest `sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222`. L’aide de `trivy config --help` et `trivy fs --help` confirme notamment les options `--misconfig-scanners`, `--skip-check-update`, `--format`, `--output`, `--skip-dirs`, `--skip-files`, `--quiet`, `--disable-telemetry` et `--skip-version-check`.
 
 La documentation Trivy 0.76 répertorie les fichiers Dockerfile/Containerfile, Terraform et Kubernetes parmi les formats IaC pris en charge. Compose n’est pas un scanner natif déclaré par cette version; les deux fichiers Compose seront inventoriés, mais ne seront pas présentés comme couverts par la commande ci-dessous. Les fichiers YAML génériques de Juice Shop ne bénéficient pas automatiquement de contrôles intégrés : l’activation d’un scanner YAML ou de règles personnalisées demanderait une méthode distincte. Les workflows GitHub Actions ne figurent pas parmi les types de scanner misconfiguration proposés par cette version.
 
-La commande restreint les types de scanner aux formats rencontrés et exclut le dépôt Git et les dépendances vendoriées lorsqu’elles existent. `--skip-check-update` évite de récupérer un nouveau jeu de règles pendant l’exécution; selon le cache local, Trivy utilisera ses règles intégrées ou déjà présentes. La disponibilité et l’âge de ce jeu de règles devront être consignés au moment du contrôle.
+La commande restreint les types de scanner aux formats rencontrés et exclut le dépôt Git et les dépendances vendoriées lorsqu’elles existent. `--skip-check-update` évite de récupérer un nouveau jeu de règles pendant l’exécution. La sortie JSON ne donne ni l’identifiant ni l’âge du bundle effectivement utilisé; l’absence de récupération a été demandée, mais la provenance cache/bundle intégré ne peut pas être établie pour ces exécutions.
 
 Références : [couverture IaC Trivy 0.76](https://trivy.dev/docs/v0.76/guide/coverage/iac/), [contrôles intégrés Trivy 0.76](https://trivy.dev/docs/v0.76/guide/scanner/misconfiguration/check/builtin/), [limitation Compose suivie par le projet Trivy](https://github.com/aquasecurity/trivy/issues/8729).
 
@@ -44,9 +44,9 @@ Références : [couverture IaC Trivy 0.76](https://trivy.dev/docs/v0.76/guide/co
 - Trivy ne prouve pas à lui seul qu’une configuration est déployée, atteignable ou exploitable. Ses résultats devront être examinés selon le contexte et les preuves disponibles.
 - L’écart entre l’identité de configuration de l’image locale et celle du rapport initial limite l’attribution des résultats à l’image auditée.
 
-## Commandes prévues (PowerShell)
+## Commandes exécutées (PowerShell)
 
-Ces commandes sont préparées pour une exécution ultérieure. **Elles n’ont pas été exécutées dans cette étape.** Elles utilisent l’image Trivy locale par digest, interdisent son téléchargement et montent les sources en lecture seule. Les sorties restent hors du dépôt, dans un répertoire local privé; ne pas les ajouter à Git.
+Les deux commandes ci-dessous ont été exécutées avec l’image Trivy locale par digest et `--pull=never`. Les sources étaient montées en lecture seule. Les JSON et journaux bruts sont conservés hors du dépôt, dans `%LOCALAPPDATA%\JuiceShopAudit\misconfigurations\20261029T092643Z\`; les ACL ont été vérifiées et accordent le contrôle complet à l’utilisateur courant seulement. Les sorties brutes ne sont pas publiées.
 
 ```powershell
 $repoRoot = (Get-Location).Path
@@ -75,4 +75,10 @@ docker run --pull=never --rm `
   --format json --output /results/juice-shop-image-locale.json /scan
 ```
 
-Avant exécution, vérifier que `$repoRoot` désigne bien ce worktree, que `$appRoot` est l’arbre extrait de l’image indiquée, que l’image Trivy locale correspond au digest attendu et que l’accès au moteur Docker ne télécharge aucune autre image. Le répertoire de sortie est protégé par les ACL Windows ci-dessus; ses résultats JSON et journaux devront rester hors Git. Les commandes utilisent des répertoires montés en lecture seule et ne démarrent pas Juice Shop.
+Les variables ont été résolues vers ce worktree et vers l’arbre privé `juice-shop-files` extrait de `/juice-shop`. Cet arbre existe encore et contient 1 963 fichiers. Son rapport d’extraction documente un conteneur créé avec `docker create --pull=never`, vérifié arrêté, puis utilisé pour copier `/juice-shop`; il n’a jamais été démarré. L’image actuellement présente est `bkimminich/juice-shop:v20.3.0`, ID local et `RepoDigest` `sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27`, Linux/amd64, 24 couches. L’écart avec le digest de configuration du rapport initial reste une limite d’attribution.
+
+Les deux commandes principales ont terminé avec le code **0**. Les rapports sont valides, créés respectivement à `2026-10-29T09:28:29.786484845Z` et `2026-10-29T09:29:06.097405743Z`, avec `Trivy.Version=0.76.0`. Le contrôle du laboratoire n’a retourné aucune cible de résultat : l’inventaire n’avait trouvé aucun Dockerfile, Terraform ou Kubernetes dans le worktree. Il s’agit de **l’absence de fichier pris en charge**, pas d’un scan de fichiers pris en charge sans détection. Le contrôle Juice Shop a retourné 66 constats; leur ventilation et leur statut sont dans le rapport partageable.
+
+Le mode `--quiet` des commandes principales a produit des journaux vides; il ne permet pas à lui seul de confirmer les diagnostics de parsing. Une exécution diagnostique supplémentaire de l’arbre applicatif avec `--debug` a créé un JSON valide avec les mêmes 66 constats, mais s’est terminée avec le code **1**. Son journal privé ne contient aucun marqueur `error`, `parse` ou `failed`; la cause du code 1 n’est pas établie. La sortie Trivy contient des cibles avec constats pour `infrastructure/Dockerfile`, `infrastructure/terraform/main.tf`, `networking.tf` et les trois fichiers de challenge. Elle ne fournit pas une liste exhaustive des fichiers simplement analysés; l’absence de cible pour d’autres fichiers Terraform ne prouve donc ni leur absence de parsing ni l’absence de constat. Le parsing complet reste une limite ouverte.
+
+Le rapport JSON n’identifie pas le bundle de règles. `--skip-check-update` a empêché de demander une mise à jour, mais l’âge et la source des règles chargées (cache ou bundle intégré) restent inconnus. Les informations de synthèse, les codes de sortie, les limites et les empreintes des rapports bruts sont consignés dans le [rapport partageable](rapport-partageable.md).
