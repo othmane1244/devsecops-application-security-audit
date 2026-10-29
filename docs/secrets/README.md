@@ -2,14 +2,14 @@
 
 ## Portée et état
 
-Cette fiche prépare les contrôles; **aucun contrôle de secrets n’a été lancé**.
+Les contrôles prévus ci-dessous ont été exécutés le **2026-10-29**. Les résultats expurgés sont publiés dans le [rapport partageable](rapport-partageable.md); les JSON bruts et journaux restent dans un dossier privé hors dépôt.
 
 Deux périmètres seront examinés séparément :
 
 1. **Dépôt d’audit** : l’arborescence de travail du dépôt `audit-devsecops-work`, à partir de sa racine. Le contrôle porte sur les fichiers présents dans l’arborescence au moment de l’exécution, pas sur l’historique Git. `.git` et `reports` seront exclus : le premier contient l’historique et des données internes Git, le second les rapports de scans déjà produits. Les autres fichiers du worktree seront dans la portée, y compris les fichiers non suivis.
-2. **Fichiers de l’application identifiée** : le contenu de `/juice-shop` dans l’image locale `bkimminich/juice-shop:v20.3.0` déjà auditée. Un conteneur temporaire sera créé à partir de l’identifiant d’image local vérifié, puis les fichiers seront copiés sans démarrer le conteneur. Trivy `fs` examinera cette copie. Cette portée couvre l’application livrée et ses dépendances sous `/juice-shop`; elle ne couvre pas les autres fichiers du système Debian, les couches supprimées de l’image ni l’état d’un runtime.
+2. **Fichiers de l’application identifiée** : le contenu de `/juice-shop` dans l’image locale `bkimminich/juice-shop:v20.3.0` déjà auditée. Un conteneur temporaire a été créé à partir de l’identifiant d’image local vérifié, puis les fichiers ont été copiés sans démarrer le conteneur. Trivy `fs` a examiné cette copie. Cette portée couvre l’application livrée et ses dépendances sous `/juice-shop`; elle ne couvre pas les autres fichiers du système Debian, les couches supprimées de l’image ni l’état d’un runtime.
 
-Les identifiants documentés de l’image locale et de l’export du scan initial diffèrent (`cea5…` / `4060…`) malgré les 24 couches concordantes. Avant le futur contrôle, confirmer la cible locale avec `docker image inspect` et consigner l’identifiant utilisé. Le contrôle ne doit ni tirer une nouvelle image ni démarrer Juice Shop. Le moteur Docker doit être accessible et Trivy **0.76.0** doit être déjà présent localement.
+Le contrôle a confirmé l’ID local `sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27`, le tag `bkimminich/juice-shop:v20.3.0`, 24 couches et l’image Trivy locale **0.76.0**. L’écart avec l’identifiant `4060…` de l’export/rapport initial demeure documenté dans le [rapport partageable](rapport-partageable.md). Aucun pull n’a été autorisé et aucun conteneur Juice Shop n’a été démarré. Pour un contrôle ultérieur, refaire ces vérifications et arrêter si l’identité diffère.
 
 ## Capacités Trivy vérifiées
 
@@ -17,45 +17,60 @@ L’aide de `aquasec/trivy:0.76.0` a été consultée sans lancer de scan. Elle 
 
 La commande sélectionne explicitement `--scanners secret`; elle n’active ni `vuln` ni les autres scanners. Les options `--skip-db-update` et `--skip-java-db-update` ne sont pas nécessaires pour le scanner de secrets. Aucun résultat brut ne doit être écrit dans le dépôt ou affiché dans le terminal.
 
+## Exécution du 2026-10-29
+
+Les deux commandes Trivy ont terminé avec le code **0**. Le scan du worktree a couvert le dépôt courant, hors `.git` et `reports`; il a émis **0 détection**. Le scan de `/juice-shop` a examiné **1 963 fichiers** et émis **5 détections** : trois `private-key` et deux `jwt-token`. Le détail expurgé et l’interprétation sont dans le [rapport partageable](rapport-partageable.md).
+
+Le scan du dépôt s’est déroulé de **01:25:06.6657279 à 01:25:08.5693004 UTC**; celui des fichiers applicatifs de **01:28:16.7127862 à 01:28:57.6962735 UTC**. Les commandes ont utilisé `aquasec/trivy:0.76.0`, l’image locale Trivy n’a pas été tirée, et les deux sources ont été montées en lecture seule. Les bruts, journaux et fichiers copiés sont conservés dans un répertoire d’exécution `%LOCALAPPDATA%` avec ACL limitées au compte courant; ils ne sont pas dans Git.
+
 ## Préparation des chemins privés
 
-Les exemples suivants sont à lancer ultérieurement depuis PowerShell, à la racine du dépôt. Les résultats bruts et l’extraction restent sous `%LOCALAPPDATA%`, hors du dépôt. Avant le scan, vérifier que le chemin résolu n’est pas à l’intérieur de la racine Git et que l’emplacement n’est ni synchronisé ni partagé. Restreindre ses ACL à l’utilisateur chargé de l’audit; ces fichiers peuvent contenir des valeurs secrètes en clair.
+Les commandes ont été exécutées depuis PowerShell, à la racine du dépôt. Les résultats bruts et l’extraction sont conservés sous `%LOCALAPPDATA%`, hors du dépôt, dans un répertoire d’exécution unique dont l’héritage ACL a été retiré et dont le seul compte autorisé est celui de l’audit. Ne pas partager ces fichiers : ils peuvent contenir des valeurs secrètes en clair.
 
 ```powershell
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path .).Path
-$privateRoot = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'JuiceShopAudit/secrets'))
+$privateBase = [System.IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'JuiceShopAudit/secrets'))
 $repoPrefix = $repoRoot.TrimEnd('\') + '\'
-if ($privateRoot.Equals($repoRoot, [StringComparison]::OrdinalIgnoreCase) -or
-    $privateRoot.StartsWith($repoPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+if ($privateBase.Equals($repoRoot, [StringComparison]::OrdinalIgnoreCase) -or
+    $privateBase.StartsWith($repoPrefix, [StringComparison]::OrdinalIgnoreCase)) {
     throw 'Le répertoire des résultats bruts est dans le dépôt; choisissez un emplacement hors Git.'
 }
 $runId = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ') + '-' + [guid]::NewGuid().ToString('N')
-$appFiles = Join-Path $privateRoot "juice-shop-files-$runId"
-if (Test-Path -LiteralPath $appFiles) { throw 'Le dossier d’extraction existe déjà; choisissez un nouveau runId.' }
-New-Item -ItemType Directory -Force -Path $privateRoot, $appFiles | Out-Null
+$runRoot = Join-Path $privateBase $runId
+New-Item -ItemType Directory -Path $runRoot | Out-Null
+$identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
+icacls $runRoot /inheritance:r
+if ($LASTEXITCODE -ne 0) { throw 'Retrait de l’héritage ACL impossible.' }
+icacls $runRoot /grant:r "${identity}:(OI)(CI)F"
+if ($LASTEXITCODE -ne 0) { throw 'Attribution de l’ACL privée impossible.' }
+$acl = Get-Acl -LiteralPath $runRoot
+$otherAccounts = @($acl.Access | Where-Object { $_.IdentityReference.Value -ne $identity })
+if ($otherAccounts.Count -ne 0) { throw 'ACL inattendue; aucun scan ne doit commencer.' }
+$appFiles = Join-Path $runRoot 'juice-shop-files'
+New-Item -ItemType Directory -Path $appFiles | Out-Null
 ```
 
 Ne pas ajouter le dossier privé à Git, ne pas copier son contenu dans un ticket/chat et ne pas joindre les sorties brutes. Après traitement, conserver ou supprimer ces données selon la politique de conservation de l’audit, en gardant le rapport partageable expurgé.
 
-## Commandes reproductibles — à exécuter lors d’une étape ultérieure
+## Commandes exécutées et reproductibles
 
 ### 1. Arborescence du dépôt d’audit
 
 Cette commande scanne le worktree courant sauf `.git` et `reports`. Elle enregistre le JSON sensible dans le dossier privé et n’imprime pas le rapport dans la console.
 
 ```powershell
-$repoRawName = "repository-$runId.raw.json"
-$repoRaw = Join-Path $privateRoot $repoRawName
+$repoRaw = Join-Path $runRoot 'repository.raw.json'
+$repoLog = Join-Path $runRoot 'repository.trivy.log'
 if (Test-Path -LiteralPath $repoRaw) { throw 'Le fichier brut existe déjà; choisissez un nouveau runId.' }
 docker run --pull=never --rm `
     -v "${repoRoot}:/src:ro" `
-    -v "${privateRoot}:/out" `
+    -v "${runRoot}:/out" `
     aquasec/trivy:0.76.0 fs `
     --scanners secret `
     --skip-dirs /src/.git --skip-dirs /src/reports `
-    --format json --output "/out/$repoRawName" `
-    --quiet --disable-telemetry --skip-version-check /src
+    --format json --output /out/repository.raw.json `
+    --quiet --disable-telemetry --skip-version-check /src *> $repoLog
 if ($LASTEXITCODE -ne 0) { throw 'Trivy repository secret scan failed' }
 ```
 
@@ -88,16 +103,16 @@ finally {
     if ($created) { docker rm $containerId | Out-Null }
 }
 
-$appRawName = "juice-shop-files-$runId.raw.json"
-$appRaw = Join-Path $privateRoot $appRawName
+$appRaw = Join-Path $runRoot 'juice-shop-files.raw.json'
+$appLog = Join-Path $runRoot 'application.trivy.log'
 if (Test-Path -LiteralPath $appRaw) { throw 'Le fichier brut existe déjà; choisissez un nouveau runId.' }
 docker run --pull=never --rm `
     -v "${appFiles}:/src:ro" `
-    -v "${privateRoot}:/out" `
+    -v "${runRoot}:/out" `
     aquasec/trivy:0.76.0 fs `
     --scanners secret `
-    --format json --output "/out/$appRawName" `
-    --quiet --disable-telemetry --skip-version-check /src
+    --format json --output /out/juice-shop-files.raw.json `
+    --quiet --disable-telemetry --skip-version-check /src *> $appLog
 if ($LASTEXITCODE -ne 0) { throw 'Trivy application-files secret scan failed' }
 ```
 
@@ -115,10 +130,10 @@ Ne jamais copier la valeur complète ni une portion qui permettrait de la recons
 
 ## Format du rapport partageable
 
-Après un contrôle ultérieur, préparer `docs/secrets/rapport-partageable.md` manuellement ou à partir des résultats expurgés. Garder une ligne par détection, sans valeur brute :
+Le [rapport partageable de cette exécution](rapport-partageable.md) suit le format ci-dessous. Pour un contrôle ultérieur, le mettre à jour manuellement à partir des résultats expurgés, avec une ligne par détection et sans valeur brute :
 
 | ID | Type de détection | Fichier et ligne | Contexte expurgé | Classement | Validité | Conclusion |
 |---|---|---|---|---|---|---|
 | S-001 | règle Trivy / catégorie | `chemin/relatif:ligne` | `clé de configuration : [masqué]` | secret potentiel / exemple pédagogique | inconnue | interprétation et preuve contextuelle, sans test externe |
 
-Le rapport précisera le périmètre scanné, la version de Trivy, la date UTC, les exclusions, le statut et les limites. Il ne contiendra ni JSON brut, ni valeur secrète, ni conclusion de validité obtenue par appel à un service.
+Le rapport précise le périmètre scanné, la version de Trivy, la date UTC, les exclusions, le statut et les limites. Il ne contient ni JSON brut, ni valeur secrète, ni conclusion de validité obtenue par appel à un service.

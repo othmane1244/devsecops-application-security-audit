@@ -108,8 +108,15 @@ The initial CycloneDX SBOM is available at
 Its scope, image identity, generation command, verification results and limits
 are documented in the [SBOM guide](docs/sbom/README.md).
 
-No application changes, dependency updates, new scans or exploitation tests
-were performed during this documentation phase.
+The Trivy secret checks have been completed for the audit worktree and the
+`/juice-shop` files from the local image. Their scope and sanitized findings
+are documented in the [secret audit method](docs/secrets/README.md) and
+[shareable report](docs/secrets/rapport-partageable.md). Raw outputs remain
+outside the repository.
+
+No application changes, dependency updates, vulnerability scans or exploitation
+tests were performed in this stage. The secret-only checks are summarized in
+the linked report above.
 
 ### Next steps
 
