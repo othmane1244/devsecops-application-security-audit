@@ -46,6 +46,8 @@ bien plus récentes de `jsonwebtoken`.
 
 ## Limites
 
-L’option `expiresIn: '6h'` est lue dans la source publiée du tag v20.3.0; la
-copie compilée de l’image (`build/lib/insecurity.js`) doit être relue pour
-confirmer la même option. Aucun test dynamique n’a été réalisé.
+La copie compilée de l’image (`build/lib/insecurity.js:72`, lue le
+4 novembre 2026 depuis un conteneur créé et jamais démarré) contient la même
+option `expiresIn: '6h'`. Aucun test dynamique n’a été réalisé : l’absence de
+`exp` est déduite du code exact de `jsonwebtoken@0.4.0`, pas observée sur un
+jeton émis.

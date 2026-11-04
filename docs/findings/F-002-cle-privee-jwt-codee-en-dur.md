@@ -10,8 +10,9 @@ les jetons. Comme le code source est public et l’image téléchargeable, toute
 personne peut signer un jeton RS256 que l’application considère comme valide,
 avec les claims de son choix (identifiant, email, rôle).
 
-**Statut : confirmé statiquement (correspondance cryptographique vérifiée).
-Aucune requête ni jeton forgé n’a été envoyé à l’application.**
+**Statut : confirmé statiquement, sur le tag publié et sur l’image auditée
+(correspondance cryptographique vérifiée). Aucune requête ni jeton forgé n’a
+été envoyé à l’application.**
 
 **Priorité proposée : P1.** Ce constat ne dépend d’aucune CVE de bibliothèque :
 il resterait vrai après la mise à jour de `jsonwebtoken`, `jws` et
@@ -28,13 +29,10 @@ de [F-001](F-001-jwt-algorithm-confusion.md).
 | K-04 | Les vérifications utilisent la clé publique correspondante : `:52` `isAuthorized()` (express-jwt), `:55` `verify()` (jws), `:189` `jwt.verify(token, publicKey, …)` dans `updateAuthenticatedUsers()`. | Idem; détails dans [01](../analysis/01-authentification.md) |
 | K-05 | **Correspondance de la paire vérifiée** le 4 novembre 2026 : la clé privée extraite de `lib/insecurity.ts` (tag v20.3.0) a été chargée localement en DER, et son module/exposant public est égal à celui de `encryptionkeys/jwt.pub` du même tag. Résultat : `MATCH`. Taille de clé : **1024 bits**. La clé n’a été ni affichée, ni copiée dans le dépôt; le fichier temporaire a été supprimé. | Script de comparaison local (Python `cryptography`), sources publiées |
 | K-06 | La même clé privée sert aussi de secret HMAC pour `deluxeToken(email)` (`lib/insecurity.ts:149-152`). Sa divulgation permet donc aussi de calculer ces jetons. | Source publiée v20.3.0 |
+| K-07 | **Même vérification sur l’image auditée** (4 novembre 2026) : `build/lib/insecurity.js` et `encryptionkeys/jwt.pub` copiés depuis un conteneur créé (jamais démarré, état `created`, supprimé ensuite) à partir de `sha256:cea5a4af…`. `scripts/keycheck.py` → `MATCH`, 1024 bits. Le `jwt.pub` de l’image a le même SHA-256 que celui du tag (`89fdb7cb…f338`). La ligne 72 du fichier compilé signe avec `{ expiresIn: '6h', algorithm: 'RS256' }`. | Image locale, lecture seule |
 
-Limite : K-05 compare les fichiers du **tag publié**. Le rapport secrets
-(K-01) établit la présence de la clé au même emplacement dans l’image extraite,
-et `docker diff` ne signale aucune modification sous `build/` ni `lib/`
-(voir [13, D-06](../analysis/13-file-type.md)). La comparaison octet par octet
-avec la copie de l’image reste à refaire quand Docker est disponible :
-`python keycheck.py <arbre extrait>/lib/insecurity.ts <arbre extrait>/encryptionkeys/jwt.pub`.
+Commande de reproduction :
+`python -I scripts/keycheck.py <arbre extrait>/build/lib/insecurity.js <arbre extrait>/encryptionkeys/jwt.pub`.
 
 ## Impact
 

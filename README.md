@@ -33,10 +33,12 @@ méthode d’audit, l’analyse, les corrections ciblées et l’automatisation.
 Image locale auditée : `bkimminich/juice-shop:v20.3.0`, Linux/amd64,
 24 couches. Docker indique localement l’ID/RepoDigest
 `sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27`.
-Le digest de configuration OCI associé au rapport initial est différent
-(`sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c`),
-malgré les couches communes. Cette limite d’identité est détaillée dans
-les [analyses](docs/analysis/20-bilan-scan-initial.md) et le [rapport SBOM](docs/sbom/README.md).
+Cette valeur est le digest de l’**index OCI** multi-plateforme (Docker
+Desktop utilise le stockage containerd). Son manifeste `linux/amd64`
+(`sha256:590a4516…`) a pour configuration
+`sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c`,
+qui est l’`ImageID` des rapports Trivy et du SBOM : il s’agit bien de la même
+image. Voir [identite-image.md](docs/identite-image.md).
 
 ## 1. Récupérer le dépôt
 

@@ -47,16 +47,10 @@ Jit, les corrections avec contre-audit et l’automatisation.
 
 ## Points documentaires encore ouverts
 
-- **Identité de l’image (`cea5…` / `4060…`)** : la fiche
-  [01](analysis/01-authentification.md) relie `cea5…` (digest du dépôt) au
-  manifeste `linux/amd64` `590a…` dont la configuration est `4060…`. Les
-  fiches 13 (D-01), 20 et 21 traitent au contraire les deux valeurs comme des
-  ID de configuration. Hypothèse à vérifier : Docker Desktop avec le stockage
-  d’images containerd renvoie le digest d’index dans `.Id`
-  (`docker info` → `driver-type: io.containerd.snapshotter.v1`). Si c’est
-  confirmé, l’écart n’est pas une limite d’attribution.
-- Relire `build/lib/insecurity.js` dans l’image pour confirmer F-002 et F-003
-  sur la copie compilée (`scripts/keycheck.py`).
+- ~~Identité de l’image (`cea5…` / `4060…`)~~ **Résolu le 4 novembre 2026**,
+  voir [identite-image.md](identite-image.md).
+- ~~Relire `build/lib/insecurity.js` dans l’image~~ **Fait** : F-002 et F-003
+  confirmés sur la copie compilée.
 - Numéros de ligne : préciser dans chaque fiche s’ils viennent de l’image ou
   du tag publié (ex. `/b2b/v2` à `server.ts:452` dans 01, `:421` dans 12).
 - Piste Handlebars + fichiers inscriptibles : voir [06](analysis/06-handlebars.md).
