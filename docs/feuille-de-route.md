@@ -12,8 +12,8 @@ Jit, les corrections avec contre-audit et l’automatisation.
 | P3 — Scans Trivy | Fait : vulnérabilités, SBOM, secrets, configurations. |
 | P5 — Analyse et priorités | Fait : fiches 01–21, constats F-001 à F-003. |
 | P4 — Intégration Jit réelle | **À faire** : seule l’étude documentaire existe ([jit](jit/README.md)). |
-| P6 — Corrections et contre-audit | **En partie fait** : F-001 à F-003, `file-type`, `HEALTHCHECK` corrigés et vérifiés ([contre-audit](contre-audit.md)). Reste `sanitize-html` et le verrouillage des dépendances. |
-| CI/CD et protection de branche | **À faire**. |
+| P6 — Corrections et contre-audit | **En partie fait** : F-001 à F-003, `file-type`, `HEALTHCHECK` corrigés et vérifiés ([contre-audit](contre-audit.md)). Dépendances et image de base verrouillées sur `v20.3.0`. Reste `sanitize-html`. |
+| CI/CD et protection de branche | **En partie fait** : workflow Trivy bloquant les nouvelles CRITICAL/HIGH ([contre-audit, section 6](contre-audit.md#6-contrôle-ci--ne-bloquer-que-les-nouvelles-criticalhigh)). Reste la protection de branche. |
 | P7 — AuditTrace | Facultatif; à sacrifier en premier si le temps manque. |
 | EventLab / versions A-B-C | Remplacé par Juice Shop (décision consignée dans le README). |
 
@@ -53,6 +53,8 @@ Jit, les corrections avec contre-audit et l’automatisation.
   confirmés sur la copie compilée.
 - Numéros de ligne : préciser dans chaque fiche s’ils viennent de l’image ou
   du tag publié (ex. `/b2b/v2` à `server.ts:452` dans 01, `:421` dans 12).
-- Fork sans `package-lock.json` : build non reproductible (voir
-  [contre-audit, section 5](contre-audit.md#5-limites-et-risques-résiduels)).
+- ~~Fork sans `package-lock.json`~~ **Résolu le 4 novembre 2026** : lock et
+  image de base figés sur `v20.3.0` ([contre-audit, section 4](contre-audit.md#4-trivy-avant--après)).
+- 28 détections apparues dans la base Trivy après le 20 octobre, non
+  analysées ([contre-audit, section 5](contre-audit.md#5-pourquoi-124-détections-aujourdhui-contre-98-au-départ)).
 - Piste Handlebars + fichiers inscriptibles : voir [06](analysis/06-handlebars.md).

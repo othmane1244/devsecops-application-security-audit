@@ -8,18 +8,17 @@ le fork Juice Shop (branche `audit/corrections`) et compare l’image corrigée
 
 | | Avant | Après |
 |---|---|---|
-| Image | `bkimminich/juice-shop:v20.3.0` | `juice-shop-corrige:audit`, construite depuis le fork |
-| Source | tag `v20.3.0` | commit `d629292` (corrections) sur `v20.3.0` |
-| Identifiant | ImageID `4060…823c` (voir [identite-image.md](identite-image.md)) | index `08bc8bb3…a8a`, config `5f700edc…7232` |
+| Image | `bkimminich/juice-shop:v20.3.0` | `juice-shop-corrige:audit-lock`, construite depuis le fork |
+| Source | tag `v20.3.0` | `v20.3.0` + corrections + verrouillage des dépendances (section 4) |
+| Identifiant | ImageID `4060…823c` (voir [identite-image.md](identite-image.md)) | index `5c810867…6080`, config `e250af15…c37d` |
 | Rapport Trivy | `reports/trivy-image-v20.3.0-rescan.json` | `reports/trivy-image-corrige.json` |
 
-Les deux scans ont été faits le 4 novembre 2026, à quelques secondes
-d’intervalle, avec Trivy `0.76.0` (image épinglée par digest
-`sha256:2416d1f7…d222`) et une base téléchargée une seule fois juste avant
-(`--skip-db-update` ensuite). L’image d’origine a été **rescannée** au lieu
-de reprendre `trivy-image-initial.json` (29 octobre) : la base a changé
-depuis, et la comparer à un scan du jour mélangerait deux bases.
-`trivy-image-initial.json` n’est pas modifié.
+Les deux scans ont été faits le 4 novembre 2026 avec Trivy `0.76.0` (image
+épinglée par digest `sha256:2416d1f7…d222`) et **la même base**, téléchargée
+une fois à 20 h 37 UTC puis réutilisée avec `--skip-db-update`. L’image
+d’origine a été rescannée au lieu de reprendre `trivy-image-initial.json` :
+voir la section 5 pour l’écart entre les deux. `trivy-image-initial.json`
+n’est pas modifié.
 
 Commande (pour chaque image, depuis la racine du dépôt) :
 
@@ -50,7 +49,7 @@ argument (extrait de l’historique git du fork) et **n’écrit aucune clé**.
 Résultats : `reports/contre-audit/jwt-fonctionnel-origine.json` (4/9
 contrôles réussis) et `jwt-fonctionnel-corrige.json` (9/9).
 
-Le test du jeton expiré a été fait sur un troisième conteneur démarré avec
+Le test du jeton expiré a été fait sur un conteneur démarré avec
 `JWT_PRIVATE_KEY_FILE` (clé RSA-2048 générée pour le test, montée en lecture
 seule, supprimée ensuite). Il confirme aussi que ce mode de chargement
 fonctionne : le jeton émis par le serveur est signé par la clé injectée.
@@ -63,65 +62,145 @@ fonctionne : le jeton émis par le serveur est signé par la clé injectée.
 | `GET /rest/user/whoami` avec le jeton | e-mail renvoyé | e-mail renvoyé |
 | Ajout au panier (produit 24) puis lecture | 200, 3 → 4 produits | 200, 3 → 4 produits |
 | Envoi d’une image de profil PNG | 302 | 302 |
-| Tests unitaires serveur (`npm run test:server`, Windows) | — | 417 réussis, 0 échec, 3 ignorés |
-| `tsc --noEmit`, ESLint sur les fichiers modifiés | — | sans erreur |
+| Tests unitaires serveur (`npm run test:server`) | — | 417 réussis, 0 échec, 3 ignorés |
+| Tests d’intégration (`npm run test:api`) | — | 545 réussis, 0 échec, 6 ignorés |
+| `tsc`, ESLint sur les fichiers modifiés | — | sans erreur |
 
-Quatre tests unitaires vérifiaient que les attaques JWT **réussissaient**
-(défis `jwtUnsignedChallenge`, `jwtForgedChallenge`), un autre utilisait un
-jeton signé par l’ancienne clé, un dernier un HMAC fixe dérivé de cette clé.
-Ils ont été inversés ou réécrits (commit `11976c4` du fork). Les deux tests
-HS256 étaient ignorés sous Windows; ils s’exécutent maintenant partout.
+Les tests ont tourné sous Windows, sur les dépendances installées avec
+`npm ci` depuis le `package-lock.json` du fork. `test:api` exige
+`build/server.js` (`npm run build:server`) et `frontend/dist` (copié depuis
+l’image construite, le frontend n’étant pas modifié).
+
+Sept tests vérifiaient que les attaques JWT **réussissaient** ou dépendaient
+de l’ancienne clé : `jwtUnsignedChallenge` (2), `jwtForgedChallenge` (2),
+`deluxeToken`, `currentUser`, et `GET basket should accept forged JWTs` dans
+`test/api/basket.test.ts`. Ils ont été inversés ou réécrits. Les deux tests
+HS256 étaient ignorés sous Windows; ils s’exécutent maintenant partout. Les
+tests Cypress n’ont pas été exécutés.
 
 ## 4. Trivy avant / après
 
+### Verrouillage des dépendances et de l’image de base
+
+Un premier contre-audit construisait l’image sans `package-lock.json`
+(`.npmrc` amont : `package-lock=false`) et avec l’image de base distroless
+du jour. La baisse mesurée mélangeait alors les corrections et des mises à
+jour sans rapport (`handlebars`, `undici`, `multer`, `qs`, `body-parser`,
+`ca-certificates`). Pour isoler les corrections, le fork fige maintenant :
+
+- **les dépendances npm** : `package-lock.json` repris de l’image
+  `v20.3.0` elle-même (`/juice-shop/package-lock.json`, 1 351 paquets), puis
+  mis à jour par `npm install --package-lock-only`. Par rapport au lock
+  d’origine, seules **36 entrées** changent, toutes liées aux paquets
+  corrigés (`express-jwt`, `jsonwebtoken`, `jws`, `jwa`, `file-type`,
+  `strtok3`, `token-types`, leurs dépendances et types). `.npmrc` passe à
+  `package-lock=true` et le lock n’est plus exclu par `.gitignore`;
+- **l’image de base** : `gcr.io/distroless/nodejs24-debian13@sha256:96df910f…66c6`,
+  publiée le 1er octobre 2026. Ses 22 couches (`diff_ids`) sont identiques
+  aux 22 premières couches de `v20.3.0`, d’après le registre gcr.io.
+
+Contrôle dans l’image corrigée : `hbs` 4.3.1, `handlebars` 4.7.9, `undici`
+6.29.0, `multer` 2.4.0, `qs` 6.16.0, `body-parser` 1.20.8, comme dans
+`v20.3.0`.
+
+### Résultat
+
 Unité : couple (vulnérabilité, paquet, version installée), même méthode des
-deux côtés. Ce décompte n’est pas celui des « 98 détections » de
-[20](analysis/20-bilan-scan-initial.md), qui portait sur le scan initial.
+deux côtés.
 
 | Sévérité | Avant | Après | Écart |
 |---|---:|---:|---:|
-| CRITICAL | 11 | 7 | −4 |
-| HIGH | 32 | 17 | −15 |
-| MEDIUM | 69 | 58 | −11 |
+| CRITICAL | 11 | 9 | −2 |
+| HIGH | 32 | 22 | −10 |
+| MEDIUM | 69 | 62 | −7 |
 | LOW | 11 | 11 | 0 |
-| UNKNOWN | 1 | 0 | −1 |
-| **Total** | **124** | **93** | **−31** |
+| UNKNOWN | 1 | 1 | 0 |
+| **Total** | **124** | **105** | **−19** |
 
-En couples (vulnérabilité, paquet) sans la version : 119 → 93, 26
-disparitions, **aucune nouvelle vulnérabilité**. Le seul « ajout » brut est
-CVE-2021-32822 sur `hbs`, déjà présente avant : `hbs` passe de 4.3.1 à 4.4.0,
-non corrigé dans les deux cas.
+**19 disparitions, aucun ajout, toutes dues aux corrections :**
 
-### Ce qui revient aux corrections, et ce qui n’y revient pas
+| Paquet retiré ou remplacé | Détections |
+|---|---|
+| `jsonwebtoken` 0.4.0 et 0.1.0 (sous `express-jwt`) | CVE-2015-9235 (CRITICAL), CVE-2022-23539, NSWG-ECO-17, CVE-2022-23540, CVE-2022-23541 — ×2 |
+| `jws` 0.2.6 | CVE-2016-1000223, CVE-2025-65945 |
+| `express-jwt` 0.1.3 | CVE-2020-15084 |
+| `file-type` 16.5.4 | CVE-2026-31808 |
+| `moment` 2.0.0 (dépendance de l’ancien `express-jwt`) | CVE-2017-18214, CVE-2022-24785, CVE-2016-4055 |
+| `base64url` 0.0.6 (dépendance de `jws` 0.2.x) | NSWG-ECO-428, GHSA-rvg8-pwq2-xj7q |
 
-Le fork n’a pas de `package-lock.json` : `npm install` résout les plages `^`
-au jour du build. Une partie de la baisse vient donc de mises à jour qui ne
-sont **pas** des corrections de l’audit. Sur les 26 disparitions :
+Les 9 CRITICAL et 22 HIGH restantes sont hors du périmètre de cette série de
+corrections. Les 28 qui ont une version corrigée sont listées et justifiées
+dans le `.trivyignore.yaml` du fork; les 3 sans correctif sont traitées à
+la section 6.
 
-- **14 sont dues aux corrections** :
-  - `jsonwebtoken` 0.4.0 et 0.1.0 (CVE-2015-9235 CRITICAL, CVE-2022-23539,
-    NSWG-ECO-17, CVE-2022-23540, CVE-2022-23541);
-  - `jws` 0.2.6 (CVE-2016-1000223, CVE-2025-65945);
-  - `express-jwt` 0.1.3 (CVE-2020-15084);
-  - `file-type` 16.5.4 (CVE-2026-31808);
-  - dépendances transitives des anciennes bibliothèques JWT, vérifiées dans
-    l’image d’origine : `moment@2.0.0` sous `express-jwt/node_modules`
-    (CVE-2017-18214, CVE-2022-24785, CVE-2016-4055) et `base64url@0.0.6`
-    utilisé par `jws` 0.2.x (NSWG-ECO-428, GHSA-rvg8-pwq2-xj7q).
-- **12 viennent de la résolution du jour** (non attribuables à l’audit) :
-  `handlebars` 4.7.9 (deux CRITICAL), `undici` 6.29.0 (cinq), `multer`,
-  `qs`, `body-parser`, et `ca-certificates` (DSA-6572-1) de l’image
-  distroless de base, téléchargée à nouveau.
+## 5. Pourquoi 124 détections aujourd’hui contre 98 au départ
 
-Les 7 CRITICAL restantes n’étaient pas dans le périmètre de cette série de
-corrections (voir [21](analysis/21-synthese-des-risques.md)).
+Le rapport initial (`trivy-image-initial.json`, `CreatedAt`
+2026-10-20T11:28Z) et le rescan du 4 novembre portent sur **la même image**
+(ImageID `4060…823c`) avec **la même version de Trivy** (0.76.0). Seule la
+base de vulnérabilités a changé entre les deux dates. Comparaison ligne à
+ligne (`scripts/compare-trivy.mjs`) :
 
-## 5. Limites et risques résiduels
+- **28 détections nouvelles** :
+  - 14 sur les paquets Debian (`gcc-14-base`, `libgcc-s1`, `libgomp1`,
+    `libstdc++6` : CVE-2026-114690, -114691, -115455; `libc6` :
+    CVE-2026-84243; `ca-certificates` : DSA-6572-1);
+  - 14 sur les paquets npm : `undici` 6.29.0 (5), `sanitize-html` 1.4.2 (2),
+    `body-parser`, `decode-uri-component`, `glob`, `minimatch`, `multer`,
+    `qs`, et `hbs` 4.3.1 (CVE-2021-32822, avis ancien nouvellement associé
+    à ce paquet dans la base).
+- **2 détections retirées** : CVE-2026-93748 (`http-cache-semantics`
+  3.8.1, HIGH) et CVE-2026-2950 (`lodash` 2.4.2, MEDIUM). Elles ne figurent
+  plus dans la base du 4 novembre; la raison (rejet ou requalification de
+  l’avis) n’a pas été vérifiée.
+- **Aucune sévérité modifiée** sur les détections communes.
 
-- **Build non reproductible** : sans fichier de verrouillage, deux builds du
-  même commit peuvent différer. Il faut committer un `package-lock.json` dans
-  le fork pour que les contre-audits suivants mesurent seulement les
-  corrections.
+98 + 28 − 2 = 124. Les fiches 01 à 21 restent fondées sur les 98 détections
+du 20 octobre; les 28 nouvelles ne sont pas encore analysées une à une.
+Détail : `reports/contre-audit/comparaison-initial-vs-rescan.json`.
+
+## 6. Contrôle CI : ne bloquer que les nouvelles CRITICAL/HIGH
+
+Le workflow `.github/workflows/audit-trivy.yml` du fork bloque une PR si
+`trivy fs` (dépôt) ou `trivy image` (image construite) trouve une
+vulnérabilité CRITICAL/HIGH **corrigeable** (`--ignore-unfixed`) ou un
+secret, **en dehors** de la ligne de base `.trivyignore.yaml`.
+
+Ligne de base : **28 couples (avis, paquet@version)** et une clé.
+
+- Ce sont les CRITICAL/HIGH corrigeables trouvées par les deux scans sur
+  l’image et le dépôt verrouillés (identiques des deux côtés) : 6 CRITICAL
+  et 22 HIGH. Les 31 CRITICAL/HIGH de la section 4 comprennent en plus
+  3 CRITICAL **sans version corrigée publiée** (`decompress@4.2.1` :
+  CVE-2026-101894, CVE-2026-53486; `marsdb@0.6.11` : GHSA-5mrr-rgp6-x4gr,
+  fiches 05 et 07). `--ignore-unfixed` ne les fait pas bloquer, et ne
+  bloquerait pas non plus une nouvelle CRITICAL sans correctif : ces cas
+  restent à suivre dans les fiches, pas dans la CI.
+- Il ne suffisait pas d’ignorer les CRITICAL restantes : les 22 HIGH
+  corrigeables auraient fait échouer chaque PR.
+- Chaque entrée vise un **purl** (`pkg:npm/tar@6.2.1`…), pas seulement un
+  identifiant : la même CVE sur un autre paquet ou une autre version bloque.
+- Chaque entrée renvoie à sa fiche (02 à 15) ou est marquée « non analysée »
+  (`body-parser`, `multer`, `undici`, apparus après le 20 octobre, avec un
+  correctif mineur disponible), et **expire le 31 décembre 2026**.
+- Secret : la clé du défi `iacLeakedKeyChallenge` (`private-key`, deux
+  fichiers Terraform et sa copie dans l’image), distincte de la clé JWT.
+
+Vérification locale (Trivy 0.76.0, même base, mêmes options que la CI) :
+
+| Ignore utilisé | `trivy fs` | `trivy image` |
+|---|---|---|
+| `.trivyignore.yaml` | sortie 0 | sortie 0 |
+| même fichier sans l’entrée `multer` CVE-2026-113872 | **sortie 1**, 1 HIGH signalée | **sortie 1**, 1 HIGH signalée |
+
+Limite : la base Trivy est téléchargée à chaque exécution. Un avis publié
+demain sur un paquet existant fera échouer des PR qui n’y sont pour rien; il
+faudra alors le corriger ou l’ajouter à la ligne de base avec sa
+justification. Comparer au scan de la branche cible éviterait cet effet,
+mais n’est pas mis en place.
+
+## 7. Limites et risques résiduels
+
 - **Défis Juice Shop désactivés** : « Unsigned JWT » et « Forged Signed JWT »
   ne peuvent plus être résolus, et le test Cypress
   `test/cypress/e2e/forgedJwt.spec.ts` échouera. C’est l’effet attendu dans
@@ -131,8 +210,12 @@ corrections (voir [21](analysis/21-synthese-des-risques.md)).
   instances, chacune aurait sa clé. En production, fournir la clé par un
   secret d’exécution.
 - **Pas de révocation** : un jeton volé reste valide jusqu’à 6 h.
-- Les tests unitaires ont tourné sous Windows; les tests d’intégration
-  `test/api` et Cypress n’ont pas été exécutés.
-- Le workflow `.github/workflows/audit-trivy.yml` du fork n’a pas encore
-  tourné : le fork n’est pas publié sur GitHub (son `origin` pointe encore
-  vers le dépôt amont).
+- **Étape de build non épinglée** : l’image `node:24` du stade `installer`
+  n’est pas figée par digest. Elle n’entre pas dans l’image finale, mais sa
+  version de npm pourrait influencer `npm dedupe`.
+- **Clés dans l’historique** : le commit de base `v20.3.0` contient
+  l’ancienne clé JWT (`lib/insecurity.ts`), publique depuis des années dans
+  le dépôt amont, retirée par les corrections et désormais refusée (401).
+  `terraform/networking.tf` et `infrastructure/terraform/networking.tf`
+  contiennent une autre clé, volontaire (défi `iacLeakedKeyChallenge`),
+  distincte de la clé JWT. Les commits de l’audit n’ajoutent aucune clé.

@@ -12,28 +12,28 @@
  },
  "apres": {
   "fichier": "reports/trivy-image-corrige.json",
-  "image": "sha256:5f700edc2bcf9bba6b4702ea860106c1679e71d3b0864d5cebe8bf38f3d97232",
-  "cree": "2026-11-04T20:39:52.207380292Z",
-  "total": 93,
-  "CRITICAL": 7,
-  "HIGH": 17,
-  "MEDIUM": 58,
+  "image": "sha256:e250af150ea435fbf88757d976ecc962e4cc54ae0194e611370a9105b816c37d",
+  "cree": "2026-11-04T21:10:37.446585107Z",
+  "total": 105,
+  "CRITICAL": 9,
+  "HIGH": 22,
+  "MEDIUM": 62,
   "LOW": 11,
-  "UNKNOWN": 0
- },
- "supprimees": {
-  "total": 32,
-  "CRITICAL": 4,
-  "HIGH": 15,
-  "MEDIUM": 12,
-  "LOW": 0,
   "UNKNOWN": 1
  },
+ "supprimees": {
+  "total": 19,
+  "CRITICAL": 2,
+  "HIGH": 10,
+  "MEDIUM": 7,
+  "LOW": 0,
+  "UNKNOWN": 0
+ },
  "ajoutees": {
-  "total": 1,
+  "total": 0,
   "CRITICAL": 0,
   "HIGH": 0,
-  "MEDIUM": 1,
+  "MEDIUM": 0,
   "LOW": 0,
   "UNKNOWN": 0
  },
@@ -88,7 +88,5 @@
    "apres": []
   }
  },
- "detailAjoutees": [
-  "MEDIUM CVE-2021-32822 hbs@4.4.0 (corrige: -)"
- ]
+ "detailAjoutees": []
 }
