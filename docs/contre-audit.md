@@ -156,7 +156,8 @@ ligne (`scripts/compare-trivy.mjs`) :
 - **Aucune sévérité modifiée** sur les détections communes.
 
 98 + 28 − 2 = 124. Les fiches 01 à 21 restent fondées sur les 98 détections
-du 20 octobre; les 28 nouvelles ne sont pas encore analysées une à une.
+du 20 octobre; les 28 nouvelles sont triées (exécution, atteignabilité,
+décision) dans la fiche [22](analysis/22-nouvelles-detections.md).
 Détail : `reports/contre-audit/comparaison-initial-vs-rescan.json`.
 
 ## 6. Contrôle CI : ne bloquer que les nouvelles CRITICAL/HIGH
@@ -180,9 +181,11 @@ Ligne de base : **28 couples (avis, paquet@version)** et une clé.
   corrigeables auraient fait échouer chaque PR.
 - Chaque entrée vise un **purl** (`pkg:npm/tar@6.2.1`…), pas seulement un
   identifiant : la même CVE sur un autre paquet ou une autre version bloque.
-- Chaque entrée renvoie à sa fiche (02 à 15) ou est marquée « non analysée »
-  (`body-parser`, `multer`, `undici`, apparus après le 20 octobre, avec un
-  correctif mineur disponible), et **expire le 31 décembre 2026**.
+- Chaque entrée renvoie à sa fiche (02 à 15). Les avis apparus après le
+  20 octobre (`body-parser`, `multer`, `undici`, `decode-uri-component`)
+  portent le tri de la fiche [22](analysis/22-nouvelles-detections.md) :
+  utilisé à l’exécution, atteignable, décision. Toutes les entrées
+  **expirent le 31 décembre 2026**.
 - Secret : la clé du défi `iacLeakedKeyChallenge` (`private-key`, deux
   fichiers Terraform et sa copie dans l’image), distincte de la clé JWT.
 
@@ -199,7 +202,78 @@ faudra alors le corriger ou l’ajouter à la ligne de base avec sa
 justification. Comparer au scan de la branche cible éviterait cet effet,
 mais n’est pas mis en place.
 
-## 7. Limites et risques résiduels
+Premier passage sur GitHub : run
+[41918462043](https://github.com/othmane1244/juice-shop/actions/runs/41918462043)
+du 4 novembre 2026 sur `f99357b`, les deux jobs réussis (fichiers 25 s,
+image 3 min 10 s).
+
+### Workflows hérités du projet amont
+
+Le fork contient 16 workflows : `audit-trivy.yml` et les 15 du dépôt
+`juice-shop/juice-shop`. Au premier push, quatre se sont lancés : « Audit Trivy », « CodeQL Scan »,
+« CI/CD Pipeline » et « Let me lint:fix that for you ». Le 4 novembre
+2026, seuls **Audit Trivy** et **CodeQL Scan** sont gardés actifs :
+
+| Workflow | État | Raison |
+|---|---|---|
+| `audit-trivy.yml` | actif | Contrôle de l’audit. |
+| `codeql-analysis.yml` | actif | SAST complémentaire. Lecture du code; écrit seulement des alertes dans l’onglet Security (`security-events: write`). |
+| `ci.yml` (CI/CD Pipeline) | **désactivé** (`gh workflow disable`), run en cours annulé | Pipeline amont : tests, publication et déploiement prévus pour `juice-shop/juice-shop`; ses tests de défis JWT échouent par construction. |
+| `lint-fixer.yml` | **désactivé** | Peut **committer** sur la branche poussée (`git-auto-commit-action`). |
+
+Les 12 autres fichiers ne se sont jamais déclenchés : GitHub ne les a pas
+enregistrés et l’API ne permet pas de désactiver un workflow non
+enregistré. Leurs déclencheurs ne surviennent pas dans l’usage prévu du
+fork :
+
+| Workflows | Déclencheur | Situation dans le fork |
+|---|---|---|
+| `release.yml`, `frontend-bundle-analysis.yml` | tag `v*` | Aucun tag poussé. |
+| `update-news-www*.yml` | publication d’une release | Aucune release. |
+| `update-challenges-*.yml` | push sur `master`/`develop` modifiant les défis | Jobs conditionnés à `github.repository == 'juice-shop/juice-shop'`. |
+| `image_actions.yml` | PR touchant des images, push sur `master`/`develop` | Pas de modification d’images prévue. |
+| `lock.yml`, `stale.yml` | planification | Planifications désactivées par défaut sur les forks. |
+| `pr-compliance.yml` | `pull_request_target` (PR ouverte/modifiée) | **Se lancera à la première PR dans le fork** : à désactiver dès son enregistrement. |
+| `rebase.yml` | commentaire d’issue/PR | Idem. |
+
+Procédure : après la première PR, `gh workflow list -R othmane1244/juice-shop --all`
+puis `gh workflow disable <id>` pour chaque workflow hérité apparu.
+
+## 7. Risques résiduels acceptés
+
+Le 4 novembre 2026, le responsable de l’audit a accepté la ligne de base de
+28 exceptions du `.trivyignore.yaml`. S’y ajoutent les risques suivants,
+que la CI **ne bloque pas** par construction.
+
+### Règle « pas de correctif = pas de blocage »
+
+Les contrôles bloquants utilisent `--ignore-unfixed` : une vulnérabilité
+sans version corrigée publiée ne fait jamais échouer une PR, quelle que soit
+sa sévérité, **y compris une nouvelle CRITICAL**. Raison : l’auteur d’une PR
+ne peut pas la corriger par une mise à jour, et un blocage permanent rendrait
+la CI inutilisable. Contrepartie : ces vulnérabilités restent visibles dans
+les rapports complets (artefacts `trivy-fs` et `trivy-image` de chaque run)
+et doivent être suivies dans les fiches, pas dans la CI.
+
+### Les 3 CRITICAL sans correctif
+
+| Paquet | Avis | Fiche | Pourquoi le risque est accepté pour l’instant | Condition de réexamen |
+|---|---|---|---|---|
+| `decompress` 4.2.1 | CVE-2026-101894, CVE-2026-53486 | [05](analysis/05-archives.md) | Chargé au démarrage (relevé de la fiche 22) par le téléchargement des fichiers de personnalisation; aucune extraction observée et aucun import ni appel depuis une route (fiche 05). | Version corrigée publiée, ou extraction d’une archive d’origine externe. |
+| `marsdb` 0.6.11 | GHSA-5mrr-rgp6-x4gr | [07](analysis/07-marsdb.md) | **Atteignable** : MarsDB reçoit des paramètres de routes et construit des sélecteurs `$where` passés au constructeur `Function` (fiche 21, P2). C’est le mécanisme des défis NoSQL volontaires de Juice Shop. L’avis couvre toutes les versions et le dépôt MarsDB est archivé : **aucun correctif n’existera**. Risque accepté **uniquement** parce que l’application est une cible d’entraînement non exposée. | Remplacement de MarsDB ou suppression des routes concernées; à planifier hors de cette série. Bloquant pour tout déploiement exposé. |
+
+Également accepté sans correctif : `hbs` 4.3.1, CVE-2021-32822 (MEDIUM,
+atteignable authentifié par le champ `layout` de `/dataerasure`, fiche
+[22](analysis/22-nouvelles-detections.md)), et les avis Debian `gcc-14` et
+`libc6` de la même fiche.
+
+### Révision
+
+Toutes les exceptions expirent le **31 décembre 2026** : la CI échoue alors
+et chaque entrée doit être corrigée ou prolongée avec un motif daté. Les
+risques sans correctif ci-dessus sont réexaminés à la même date.
+
+## 8. Limites et risques résiduels
 
 - **Défis Juice Shop désactivés** : « Unsigned JWT » et « Forged Signed JWT »
   ne peuvent plus être résolus, et le test Cypress
