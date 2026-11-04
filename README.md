@@ -8,6 +8,16 @@ leurs effets.
 
 Les contrôles initiaux Trivy sont documentés. Le rapport de vulnérabilités comporte 98 occurrences (11 CRITICAL, 27 HIGH, 49 MEDIUM et 11 LOW); le rapport filtré regroupe les 38 occurrences CRITICAL/HIGH. Le contrôle distinct de mauvaises configurations compte 66 occurrences dans l’arbre Juice Shop, dont 48 dans des exemples pédagogiques. Ces comptes ne représentent ni des risques tous applicables ni des exploitations confirmées. Les contrôles de secrets ont également été réalisés; leurs résultats partageables sont expurgés. L’audit reste ouvert.
 
+**Constats confirmés (fiches dans [docs/findings](docs/findings/)) :**
+
+| ID | Constat | Priorité |
+|---|---|---|
+| [F-002](docs/findings/F-002-cle-privee-jwt-codee-en-dur.md) | Clé privée JWT RSA 1024 bits codée en dur, paire de `jwt.pub` vérifiée : signature de jetons arbitraires possible. | P1 |
+| [F-003](docs/findings/F-003-jetons-sans-expiration.md) | `expiresIn` ignoré par `jsonwebtoken@0.4.0` : jetons sans expiration. | P2 |
+| [F-001](docs/findings/F-001-jwt-algorithm-confusion.md) | Vérification JWT sans liste d’algorithmes avec des versions affectées par CVE-2015-9235. | P1 (exploitation non démontrée) |
+
+La suite du travail (Jit, corrections, contre-audit, pipeline) est décrite dans la [feuille de route](docs/feuille-de-route.md).
+
 ## Objectif et périmètre
 
 - Application cible : OWASP Juice Shop.

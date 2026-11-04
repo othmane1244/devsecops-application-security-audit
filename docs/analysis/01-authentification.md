@@ -201,7 +201,7 @@ Trivy signale `NSWG-ECO-428` de sévérité HIGH pour `base64url@0.0.6`, avec `>
 
 ### 2. Conditions décrites par l’avis
 
-Le rapport décrit l’allocation de tampons non initialisés lorsqu’un nombre est fourni à `base64url`, sur Node.js 4.x ou antérieur. L’avis GitHub [GHSA-rvg8-pwq2-xj7q](https://github.com/advisories/GHSA-rvg8-pwq2-xj7q) décrit le même paquet, le même comportement, les versions antérieures à 3.0.0 et indique **qu’aucun CVE n’est connu**. `NSWG-ECO-428` et `GHSA-rvg8-pwq2-xj7q` sont donc à rapprocher comme deux identifiants du même avis, pas comme deux détections séparées dans le rapport fourni. Les références mainteneur sont le [PR #25 de base64url](https://github.com/brianloveswords/base64url/pull/25) et le [rapport HackerOne 321687](https://hackerone.com/reports/321687).
+Le rapport décrit l’allocation de tampons non initialisés lorsqu’un nombre est fourni à `base64url`, sur Node.js 4.x ou antérieur. L’avis GitHub [GHSA-rvg8-pwq2-xj7q](https://github.com/advisories/GHSA-rvg8-pwq2-xj7q) décrit le même paquet, le même comportement, les versions antérieures à 3.0.0 et indique **qu’aucun CVE n’est connu**. `NSWG-ECO-428` et `GHSA-rvg8-pwq2-xj7q` sont donc deux identifiants du même avis. Le rapport filtré n’en contient qu’une ligne (`NSWG-ECO-428`, HIGH); le **rapport initial en contient deux** — occurrences 033 (`NSWG-ECO-428`, HIGH) et 034 (`GHSA-rvg8-pwq2-xj7q`, MEDIUM) dans [20](20-bilan-scan-initial.md) — avec des sévérités différentes pour le même avis. La conclusion ci-dessous s’applique aux deux lignes. Les références mainteneur sont le [PR #25 de base64url](https://github.com/brianloveswords/base64url/pull/25) et le [rapport HackerOne 321687](https://hackerone.com/reports/321687).
 
 ### 3. Preuve déjà trouvée dans le code
 
