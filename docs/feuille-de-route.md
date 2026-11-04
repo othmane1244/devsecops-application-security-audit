@@ -12,7 +12,7 @@ Jit, les corrections avec contre-audit et l’automatisation.
 | P3 — Scans Trivy | Fait : vulnérabilités, SBOM, secrets, configurations. |
 | P5 — Analyse et priorités | Fait : fiches 01–21, constats F-001 à F-003. |
 | P4 — Intégration Jit réelle | **À faire** : seule l’étude documentaire existe ([jit](jit/README.md)). |
-| P6 — Corrections et contre-audit | **À faire** : aucune correction appliquée. |
+| P6 — Corrections et contre-audit | **En partie fait** : F-001 à F-003, `file-type`, `HEALTHCHECK` corrigés et vérifiés ([contre-audit](contre-audit.md)). Reste `sanitize-html` et le verrouillage des dépendances. |
 | CI/CD et protection de branche | **À faire**. |
 | P7 — AuditTrace | Facultatif; à sacrifier en premier si le temps manque. |
 | EventLab / versions A-B-C | Remplacé par Juice Shop (décision consignée dans le README). |
@@ -34,7 +34,7 @@ Jit, les corrections avec contre-audit et l’automatisation.
      `algorithms: ['RS256']`, `exp` exigé;
    - `file-type` ≥ 21.3.1 (CVE-2026-31808), `sanitize-html` récent;
    - Dockerfile : `HEALTHCHECK` (DS-0026).
-4. **Contre-audit** : reconstruire l’image, relever son digest, relancer les
+4. **Contre-audit** (fait le 4 novembre 2026 pour la série JWT / `file-type` / `HEALTHCHECK`, voir [contre-audit.md](contre-audit.md)) : reconstruire l’image, relever son digest, relancer les
    mêmes commandes Trivy dans un **nouveau** fichier
    (`reports/trivy-image-corrige.json`), relancer Jit, exécuter un test
    fonctionnel (connexion, panier). Tableau avant/après par constat.
@@ -53,4 +53,6 @@ Jit, les corrections avec contre-audit et l’automatisation.
   confirmés sur la copie compilée.
 - Numéros de ligne : préciser dans chaque fiche s’ils viennent de l’image ou
   du tag publié (ex. `/b2b/v2` à `server.ts:452` dans 01, `:421` dans 12).
+- Fork sans `package-lock.json` : build non reproductible (voir
+  [contre-audit, section 5](contre-audit.md#5-limites-et-risques-résiduels)).
 - Piste Handlebars + fichiers inscriptibles : voir [06](analysis/06-handlebars.md).

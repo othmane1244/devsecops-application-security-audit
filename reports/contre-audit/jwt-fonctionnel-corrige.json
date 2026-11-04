@@ -1,0 +1,50 @@
+{
+ "base": "http://localhost:3301",
+ "results": [
+  {
+   "test": "connexion admin",
+   "ok": true,
+   "detail": "HTTP 200"
+  },
+  {
+   "test": "F-003 jeton contient exp",
+   "ok": true,
+   "detail": "exp-iat = 6 h"
+  },
+  {
+   "test": "alg du jeton emis",
+   "ok": true,
+   "detail": "RS256"
+  },
+  {
+   "test": "F-002 jeton NON signe par l'ancienne cle",
+   "ok": true,
+   "detail": "autre cle"
+  },
+  {
+   "test": "whoami avec jeton legitime",
+   "ok": true,
+   "detail": "admin@juice-sh.op"
+  },
+  {
+   "test": "panier : ajout + lecture",
+   "ok": true,
+   "detail": "ajout produit 24 HTTP 200, lecture HTTP 200, 3 -> 4 produit(s)"
+  },
+  {
+   "test": "attaque alg none refusee",
+   "ok": true,
+   "detail": "HTTP 401"
+  },
+  {
+   "test": "attaque HS256 signe avec l'ancienne cle publique refusee",
+   "ok": true,
+   "detail": "HTTP 401"
+  },
+  {
+   "test": "attaque RS256 signe avec l'ancienne cle privee refusee",
+   "ok": true,
+   "detail": "HTTP 401"
+  }
+ ]
+}
