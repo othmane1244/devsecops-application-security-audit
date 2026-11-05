@@ -1,0 +1,3 @@
+# Exports bruts Jit (CSV) : peuvent contenir des extraits de code et des
+# valeurs de secrets. Seule la synthèse docs/jit/resultats-*.md est versionnée.
+reports/jit/brut/
