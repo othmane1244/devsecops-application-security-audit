@@ -1,0 +1,546 @@
+{
+ "reference": {
+  "semgrep": {
+   "constats": 43,
+   "erreurs": {
+    "S": 16,
+    "T": 3,
+    "PartialParsing": 35
+   },
+   "severite": {
+    "WARNING": 28,
+    "ERROR": 13,
+    "MEDIUM": 2
+   },
+   "regles": {
+    "github-actions-mutable-action-tag": 7,
+    "gha-curl-pipe-shell": 1,
+    "run-shell-injection": 5,
+    "npm-missing-minimum-release-age": 2,
+    "express-sequelize-injection": 6,
+    "aws-subnet-has-public-ip-address": 5,
+    "insecure-load-balancer-tls-version": 5,
+    "hardcoded-jwt-secret": 1,
+    "express-res-sendfile": 4,
+    "express-open-redirect": 1,
+    "code-string-concat": 1,
+    "express-check-directory-listing": 5
+   },
+   "liste": [
+    "WARNING github-actions-mutable-action-tag .github/workflows/ci.yml:198",
+    "ERROR gha-curl-pipe-shell .github/workflows/ci.yml:374",
+    "WARNING github-actions-mutable-action-tag .github/workflows/codeql-analysis.yml:23",
+    "WARNING github-actions-mutable-action-tag .github/workflows/codeql-analysis.yml:34",
+    "WARNING github-actions-mutable-action-tag .github/workflows/codeql-analysis.yml:36",
+    "WARNING github-actions-mutable-action-tag .github/workflows/image_actions.yml:30",
+    "WARNING github-actions-mutable-action-tag .github/workflows/image_actions.yml:33",
+    "WARNING github-actions-mutable-action-tag .github/workflows/image_actions.yml:42",
+    "ERROR run-shell-injection .github/workflows/update-challenges-ebook.yml:22",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www-legacy.yml:27",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www-legacy.yml:36",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www.yml:27",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www.yml:36",
+    "MEDIUM npm-missing-minimum-release-age .npmrc:1",
+    "ERROR express-sequelize-injection data/static/codefixes/dbSchemaChallenge_1.ts:5",
+    "ERROR express-sequelize-injection data/static/codefixes/dbSchemaChallenge_3.ts:11",
+    "WARNING aws-subnet-has-public-ip-address data/static/codefixes/iacLeakedKeyChallenge_1.tf:17",
+    "WARNING insecure-load-balancer-tls-version data/static/codefixes/iacLeakedKeyChallenge_1.tf:159",
+    "WARNING aws-subnet-has-public-ip-address data/static/codefixes/iacLeakedKeyChallenge_2.tf:17",
+    "WARNING insecure-load-balancer-tls-version data/static/codefixes/iacLeakedKeyChallenge_2.tf:159",
+    "WARNING aws-subnet-has-public-ip-address data/static/codefixes/iacLeakedKeyChallenge_3_correct.tf:17",
+    "WARNING insecure-load-balancer-tls-version data/static/codefixes/iacLeakedKeyChallenge_3_correct.tf:159",
+    "ERROR express-sequelize-injection data/static/codefixes/unionSqlInjectionChallenge_1.ts:6",
+    "ERROR express-sequelize-injection data/static/codefixes/unionSqlInjectionChallenge_3.ts:10",
+    "MEDIUM npm-missing-minimum-release-age frontend/.npmrc:1",
+    "WARNING aws-subnet-has-public-ip-address infrastructure/terraform/networking.tf:18",
+    "WARNING insecure-load-balancer-tls-version infrastructure/terraform/networking.tf:160",
+    "WARNING hardcoded-jwt-secret lib/insecurity.ts:54",
+    "WARNING express-res-sendfile routes/fileServer.ts:32",
+    "WARNING express-res-sendfile routes/keyServer.ts:14",
+    "WARNING express-res-sendfile routes/logfileServer.ts:14",
+    "ERROR express-sequelize-injection routes/login.ts:34",
+    "WARNING express-res-sendfile routes/quarantineServer.ts:14",
+    "WARNING express-open-redirect routes/redirect.ts:18",
+    "ERROR express-sequelize-injection routes/search.ts:23",
+    "ERROR code-string-concat routes/userProfile.ts:65",
+    "WARNING express-check-directory-listing server.ts:269",
+    "WARNING express-check-directory-listing server.ts:290",
+    "WARNING express-check-directory-listing server.ts:294",
+    "WARNING express-check-directory-listing server.ts:298",
+    "WARNING express-check-directory-listing server.ts:302",
+    "WARNING aws-subnet-has-public-ip-address terraform/networking.tf:18",
+    "WARNING insecure-load-balancer-tls-version terraform/networking.tf:160"
+   ]
+  },
+  "osv": {
+   "sources": [],
+   "paquetsVulnerables": 0,
+   "groupesAvis": 0
+  },
+  "gitleaks": {
+   "constats": 69,
+   "regles": {
+    "generic-api-key": 54,
+    "jwt": 12,
+    "private-key": 3
+   },
+   "dossiers": {
+    "data/static": 2,
+    "frontend/src": 7,
+    "lib/insecurity.ts": 1,
+    "infrastructure/terraform": 1,
+    "test/api": 45,
+    "test/cypress": 5,
+    "terraform/networking.tf": 1,
+    "routes/login.ts": 1,
+    "test/server": 6
+   },
+   "valeursExpurgees": true,
+   "liste": [
+    "generic-api-key data/static/users.yml:88",
+    "generic-api-key data/static/users.yml:151",
+    "jwt frontend/src/app/app.guard.spec.ts:46",
+    "generic-api-key frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78",
+    "jwt frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72",
+    "generic-api-key frontend/src/app/faucet/faucet.component.ts:34",
+    "generic-api-key frontend/src/app/oauth/oauth.component.spec.ts:91",
+    "generic-api-key frontend/src/app/oauth/oauth.component.spec.ts:91",
+    "generic-api-key frontend/src/app/oauth/oauth.component.spec.ts:98",
+    "private-key lib/insecurity.ts:21",
+    "private-key infrastructure/terraform/networking.tf:171",
+    "generic-api-key test/api/checkKeys.test.ts:46",
+    "generic-api-key test/api/checkKeys.test.ts:57",
+    "generic-api-key test/api/checkKeys.test.ts:68",
+    "generic-api-key test/api/product-review.test.ts:170",
+    "generic-api-key test/api/product-review.test.ts:184",
+    "jwt test/cypress/e2e/forgedJwt.spec.ts:7",
+    "jwt test/cypress/e2e/forgedJwt.spec.ts:22",
+    "jwt test/cypress/e2e/forgedJwt.spec.ts:38",
+    "generic-api-key test/api/2fa.test.ts:42",
+    "generic-api-key test/api/2fa.test.ts:66",
+    "generic-api-key test/api/2fa.test.ts:85",
+    "generic-api-key test/api/2fa.test.ts:104",
+    "generic-api-key test/api/2fa.test.ts:123",
+    "generic-api-key test/api/2fa.test.ts:142",
+    "generic-api-key test/api/2fa.test.ts:182",
+    "generic-api-key test/api/2fa.test.ts:214",
+    "generic-api-key test/api/2fa.test.ts:240",
+    "generic-api-key test/api/2fa.test.ts:257",
+    "generic-api-key test/api/2fa.test.ts:266",
+    "generic-api-key test/api/2fa.test.ts:292",
+    "generic-api-key test/api/2fa.test.ts:317",
+    "generic-api-key test/api/2fa.test.ts:352",
+    "generic-api-key test/api/2fa.test.ts:379",
+    "generic-api-key test/api/2fa.test.ts:412",
+    "generic-api-key test/cypress/e2e/totpSetup.spec.ts:7",
+    "generic-api-key test/api/erasure-request.test.ts:36",
+    "generic-api-key test/api/erasure-request.test.ts:55",
+    "generic-api-key test/api/erasure-request.test.ts:68",
+    "generic-api-key test/api/erasure-request.test.ts:82",
+    "generic-api-key test/api/erasure-request.test.ts:94",
+    "generic-api-key test/api/erasure-request.test.ts:106",
+    "private-key terraform/networking.tf:171",
+    "generic-api-key test/api/login.test.ts:147",
+    "generic-api-key test/api/login.test.ts:245",
+    "generic-api-key test/api/login.test.ts:267",
+    "generic-api-key test/cypress/e2e/login.spec.ts:126",
+    "generic-api-key routes/login.ts:64",
+    "generic-api-key test/api/data-export.test.ts:53",
+    "generic-api-key test/api/data-export.test.ts:73",
+    "generic-api-key test/api/data-export.test.ts:90",
+    "generic-api-key test/api/data-export.test.ts:110",
+    "generic-api-key test/api/feedback.test.ts:117",
+    "generic-api-key test/api/feedback.test.ts:143",
+    "jwt test/api/user.test.ts:280",
+    "generic-api-key test/api/user.test.ts:240",
+    "generic-api-key test/api/user.test.ts:289",
+    "generic-api-key test/api/user.test.ts:304",
+    "generic-api-key test/api/user.test.ts:318",
+    "generic-api-key test/api/user.test.ts:280",
+    "generic-api-key test/api/chat.test.ts:261",
+    "jwt test/server/currentUser.unit.test.ts:31",
+    "jwt test/server/currentUser.unit.test.ts:34",
+    "generic-api-key test/api/basket.test.ts:115",
+    "generic-api-key test/api/basket.test.ts:241",
+    "jwt test/server/verify.unit.test.ts:283",
+    "jwt test/server/verify.unit.test.ts:291",
+    "jwt test/server/verify.unit.test.ts:308",
+    "jwt test/server/verify.unit.test.ts:316"
+   ]
+  },
+  "kics": {
+   "total": 219,
+   "severite": {
+    "CRITICAL": 0,
+    "HIGH": 20,
+    "INFO": 49,
+    "LOW": 40,
+    "MEDIUM": 110,
+    "TRACE": 0
+   },
+   "plateformes": {
+    "Terraform": 121,
+    "OpenAPI": 30,
+    "DockerCompose": 62,
+    "CICD": 6
+   },
+   "parEmplacement": {
+    "terraform/networking.tf": {
+     "HIGH": 4,
+     "MEDIUM": 9,
+     "LOW": 3,
+     "INFO": 7
+    },
+    "data/static/codefixes": {
+     "HIGH": 12,
+     "MEDIUM": 63,
+     "LOW": 9,
+     "INFO": 27
+    },
+    "infrastructure/terraform": {
+     "HIGH": 4,
+     "MEDIUM": 11,
+     "LOW": 4,
+     "INFO": 7
+    },
+    "swagger.yml": {
+     "MEDIUM": 7,
+     "LOW": 17,
+     "INFO": 6
+    },
+    "terraform/main.tf": {
+     "MEDIUM": 2,
+     "LOW": 1
+    },
+    "infrastructure/docker-compose.yml": {
+     "MEDIUM": 12,
+     "INFO": 2
+    },
+    "docker-compose.test.yml": {
+     "MEDIUM": 6
+    },
+    ".github/workflows": {
+     "LOW": 6
+    }
+   }
+  },
+  "trivyDockerfile": [
+   {
+    "cible": "Dockerfile",
+    "constats": [
+     "DS-0001 MEDIUM",
+     "DS-0026 LOW"
+    ]
+   },
+   {
+    "cible": "infrastructure/Dockerfile",
+    "constats": [
+     "DS-0026 LOW"
+    ]
+   },
+   {
+    "cible": "test/smoke/Dockerfile",
+    "constats": [
+     "DS-0001 MEDIUM",
+     "DS-0002 HIGH",
+     "DS-0025 HIGH",
+     "DS-0026 LOW"
+    ]
+   }
+  ]
+ },
+ "courant": {
+  "semgrep": {
+   "constats": 46,
+   "erreurs": {
+    "S": 16,
+    "T": 3,
+    "PartialParsing": 38
+   },
+   "severite": {
+    "WARNING": 31,
+    "ERROR": 13,
+    "MEDIUM": 2
+   },
+   "regles": {
+    "github-actions-mutable-action-tag": 11,
+    "gha-curl-pipe-shell": 1,
+    "run-shell-injection": 5,
+    "npm-missing-minimum-release-age": 2,
+    "express-sequelize-injection": 6,
+    "aws-subnet-has-public-ip-address": 5,
+    "insecure-load-balancer-tls-version": 5,
+    "express-res-sendfile": 4,
+    "express-open-redirect": 1,
+    "code-string-concat": 1,
+    "express-check-directory-listing": 5
+   },
+   "liste": [
+    "WARNING github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:23",
+    "WARNING github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:39",
+    "WARNING github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:49",
+    "WARNING github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:65",
+    "WARNING github-actions-mutable-action-tag .github/workflows/ci.yml:198",
+    "ERROR gha-curl-pipe-shell .github/workflows/ci.yml:374",
+    "WARNING github-actions-mutable-action-tag .github/workflows/codeql-analysis.yml:23",
+    "WARNING github-actions-mutable-action-tag .github/workflows/codeql-analysis.yml:34",
+    "WARNING github-actions-mutable-action-tag .github/workflows/codeql-analysis.yml:36",
+    "WARNING github-actions-mutable-action-tag .github/workflows/image_actions.yml:30",
+    "WARNING github-actions-mutable-action-tag .github/workflows/image_actions.yml:33",
+    "WARNING github-actions-mutable-action-tag .github/workflows/image_actions.yml:42",
+    "ERROR run-shell-injection .github/workflows/update-challenges-ebook.yml:22",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www-legacy.yml:27",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www-legacy.yml:36",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www.yml:27",
+    "ERROR run-shell-injection .github/workflows/update-challenges-www.yml:36",
+    "MEDIUM npm-missing-minimum-release-age .npmrc:1",
+    "ERROR express-sequelize-injection data/static/codefixes/dbSchemaChallenge_1.ts:5",
+    "ERROR express-sequelize-injection data/static/codefixes/dbSchemaChallenge_3.ts:11",
+    "WARNING aws-subnet-has-public-ip-address data/static/codefixes/iacLeakedKeyChallenge_1.tf:17",
+    "WARNING insecure-load-balancer-tls-version data/static/codefixes/iacLeakedKeyChallenge_1.tf:159",
+    "WARNING aws-subnet-has-public-ip-address data/static/codefixes/iacLeakedKeyChallenge_2.tf:17",
+    "WARNING insecure-load-balancer-tls-version data/static/codefixes/iacLeakedKeyChallenge_2.tf:159",
+    "WARNING aws-subnet-has-public-ip-address data/static/codefixes/iacLeakedKeyChallenge_3_correct.tf:17",
+    "WARNING insecure-load-balancer-tls-version data/static/codefixes/iacLeakedKeyChallenge_3_correct.tf:159",
+    "ERROR express-sequelize-injection data/static/codefixes/unionSqlInjectionChallenge_1.ts:6",
+    "ERROR express-sequelize-injection data/static/codefixes/unionSqlInjectionChallenge_3.ts:10",
+    "MEDIUM npm-missing-minimum-release-age frontend/.npmrc:1",
+    "WARNING aws-subnet-has-public-ip-address infrastructure/terraform/networking.tf:18",
+    "WARNING insecure-load-balancer-tls-version infrastructure/terraform/networking.tf:160",
+    "WARNING express-res-sendfile routes/fileServer.ts:32",
+    "WARNING express-res-sendfile routes/keyServer.ts:14",
+    "WARNING express-res-sendfile routes/logfileServer.ts:14",
+    "ERROR express-sequelize-injection routes/login.ts:34",
+    "WARNING express-res-sendfile routes/quarantineServer.ts:14",
+    "WARNING express-open-redirect routes/redirect.ts:18",
+    "ERROR express-sequelize-injection routes/search.ts:23",
+    "ERROR code-string-concat routes/userProfile.ts:65",
+    "WARNING express-check-directory-listing server.ts:269",
+    "WARNING express-check-directory-listing server.ts:290",
+    "WARNING express-check-directory-listing server.ts:294",
+    "WARNING express-check-directory-listing server.ts:298",
+    "WARNING express-check-directory-listing server.ts:302",
+    "WARNING aws-subnet-has-public-ip-address terraform/networking.tf:18",
+    "WARNING insecure-load-balancer-tls-version terraform/networking.tf:160"
+   ]
+  },
+  "osv": {
+   "sources": [
+    "package-lock.json"
+   ],
+   "paquetsVulnerables": 27,
+   "groupesAvis": 67
+  },
+  "gitleaks": {
+   "constats": 66,
+   "regles": {
+    "generic-api-key": 54,
+    "jwt": 10,
+    "private-key": 2
+   },
+   "dossiers": {
+    "data/static": 2,
+    "frontend/src": 7,
+    "infrastructure/terraform": 1,
+    "test/api": 45,
+    "routes/login.ts": 1,
+    "terraform/networking.tf": 1,
+    "test/cypress": 5,
+    "test/server": 4
+   },
+   "valeursExpurgees": true,
+   "liste": [
+    "generic-api-key data/static/users.yml:88",
+    "generic-api-key data/static/users.yml:151",
+    "generic-api-key frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:78",
+    "jwt frontend/src/app/last-login-ip/last-login-ip.component.spec.ts:72",
+    "jwt frontend/src/app/app.guard.spec.ts:46",
+    "generic-api-key frontend/src/app/faucet/faucet.component.ts:34",
+    "generic-api-key frontend/src/app/oauth/oauth.component.spec.ts:91",
+    "generic-api-key frontend/src/app/oauth/oauth.component.spec.ts:91",
+    "generic-api-key frontend/src/app/oauth/oauth.component.spec.ts:98",
+    "private-key infrastructure/terraform/networking.tf:171",
+    "generic-api-key test/api/checkKeys.test.ts:46",
+    "generic-api-key test/api/checkKeys.test.ts:57",
+    "generic-api-key test/api/checkKeys.test.ts:68",
+    "generic-api-key test/api/erasure-request.test.ts:36",
+    "generic-api-key test/api/erasure-request.test.ts:55",
+    "generic-api-key test/api/erasure-request.test.ts:68",
+    "generic-api-key test/api/erasure-request.test.ts:82",
+    "generic-api-key test/api/erasure-request.test.ts:94",
+    "generic-api-key test/api/erasure-request.test.ts:106",
+    "generic-api-key routes/login.ts:64",
+    "private-key terraform/networking.tf:171",
+    "generic-api-key test/api/2fa.test.ts:42",
+    "generic-api-key test/api/2fa.test.ts:66",
+    "generic-api-key test/api/2fa.test.ts:85",
+    "generic-api-key test/api/2fa.test.ts:104",
+    "generic-api-key test/api/2fa.test.ts:123",
+    "generic-api-key test/api/2fa.test.ts:142",
+    "generic-api-key test/api/2fa.test.ts:182",
+    "generic-api-key test/api/2fa.test.ts:214",
+    "generic-api-key test/api/2fa.test.ts:240",
+    "generic-api-key test/api/2fa.test.ts:257",
+    "generic-api-key test/api/2fa.test.ts:266",
+    "generic-api-key test/api/2fa.test.ts:292",
+    "generic-api-key test/api/2fa.test.ts:317",
+    "generic-api-key test/api/2fa.test.ts:352",
+    "generic-api-key test/api/2fa.test.ts:379",
+    "generic-api-key test/api/2fa.test.ts:412",
+    "generic-api-key test/api/product-review.test.ts:170",
+    "generic-api-key test/api/product-review.test.ts:184",
+    "generic-api-key test/cypress/e2e/totpSetup.spec.ts:7",
+    "generic-api-key test/api/basket.test.ts:115",
+    "generic-api-key test/api/basket.test.ts:241",
+    "jwt test/cypress/e2e/forgedJwt.spec.ts:7",
+    "jwt test/cypress/e2e/forgedJwt.spec.ts:22",
+    "jwt test/cypress/e2e/forgedJwt.spec.ts:38",
+    "jwt test/api/user.test.ts:280",
+    "generic-api-key test/api/user.test.ts:240",
+    "generic-api-key test/api/user.test.ts:289",
+    "generic-api-key test/api/user.test.ts:304",
+    "generic-api-key test/api/user.test.ts:318",
+    "generic-api-key test/api/user.test.ts:280",
+    "generic-api-key test/api/login.test.ts:147",
+    "generic-api-key test/api/login.test.ts:245",
+    "generic-api-key test/api/login.test.ts:267",
+    "generic-api-key test/cypress/e2e/login.spec.ts:126",
+    "generic-api-key test/api/feedback.test.ts:117",
+    "generic-api-key test/api/feedback.test.ts:143",
+    "jwt test/server/verify.unit.test.ts:284",
+    "jwt test/server/verify.unit.test.ts:292",
+    "jwt test/server/verify.unit.test.ts:310",
+    "jwt test/server/verify.unit.test.ts:318",
+    "generic-api-key test/api/data-export.test.ts:53",
+    "generic-api-key test/api/data-export.test.ts:73",
+    "generic-api-key test/api/data-export.test.ts:90",
+    "generic-api-key test/api/data-export.test.ts:110",
+    "generic-api-key test/api/chat.test.ts:261"
+   ]
+  },
+  "kics": {
+   "total": 219,
+   "severite": {
+    "CRITICAL": 0,
+    "HIGH": 20,
+    "INFO": 49,
+    "LOW": 40,
+    "MEDIUM": 110,
+    "TRACE": 0
+   },
+   "plateformes": {
+    "Terraform": 121,
+    "OpenAPI": 30,
+    "DockerCompose": 62,
+    "CICD": 6
+   },
+   "parEmplacement": {
+    "terraform/networking.tf": {
+     "HIGH": 4,
+     "MEDIUM": 9,
+     "LOW": 3,
+     "INFO": 7
+    },
+    "data/static/codefixes": {
+     "HIGH": 12,
+     "MEDIUM": 63,
+     "LOW": 9,
+     "INFO": 27
+    },
+    "infrastructure/terraform": {
+     "HIGH": 4,
+     "MEDIUM": 11,
+     "LOW": 4,
+     "INFO": 7
+    },
+    "swagger.yml": {
+     "MEDIUM": 7,
+     "LOW": 17,
+     "INFO": 6
+    },
+    "terraform/main.tf": {
+     "MEDIUM": 2,
+     "LOW": 1
+    },
+    "docker-compose.test.yml": {
+     "MEDIUM": 6
+    },
+    "infrastructure/docker-compose.yml": {
+     "MEDIUM": 12,
+     "INFO": 2
+    },
+    ".github/workflows": {
+     "LOW": 6
+    }
+   }
+  },
+  "trivyDockerfile": [
+   {
+    "cible": "infrastructure/Dockerfile",
+    "constats": [
+     "DS-0026 LOW"
+    ]
+   },
+   {
+    "cible": "test/smoke/Dockerfile",
+    "constats": [
+     "DS-0001 MEDIUM",
+     "DS-0002 HIGH",
+     "DS-0025 HIGH",
+     "DS-0026 LOW"
+    ]
+   }
+  ]
+ },
+ "differences": {
+  "semgrep": {
+   "seulementReference": [
+    "hardcoded-jwt-secret lib/insecurity.ts:54"
+   ],
+   "seulementCourant": [
+    "github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:23",
+    "github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:39",
+    "github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:49",
+    "github-actions-mutable-action-tag .github/workflows/audit-trivy.yml:65"
+   ]
+  },
+  "gitleaks": {
+   "seulementReference": [
+    "private-key lib/insecurity.ts:21",
+    "jwt test/server/currentUser.unit.test.ts:31",
+    "jwt test/server/currentUser.unit.test.ts:34",
+    "jwt test/server/verify.unit.test.ts:283",
+    "jwt test/server/verify.unit.test.ts:291",
+    "jwt test/server/verify.unit.test.ts:308",
+    "jwt test/server/verify.unit.test.ts:316"
+   ],
+   "seulementCourant": [
+    "jwt test/server/verify.unit.test.ts:284",
+    "jwt test/server/verify.unit.test.ts:292",
+    "jwt test/server/verify.unit.test.ts:310",
+    "jwt test/server/verify.unit.test.ts:318"
+   ]
+  }
+ },
+ "recoupementSca": {
+  "osvGroupes": 67,
+  "osvProd": 59,
+  "osvDev": 8,
+  "trivyImageNpm": 60,
+  "trivyImageDebian": 45,
+  "communs": 59,
+  "osvSeulement": [
+   "@cyclonedx/cyclonedx-npm@4.2.1 GHSA-q69g-4hcv-6jg4 (dev)",
+   "@cyclonedx/cyclonedx-npm@4.2.1 GHSA-v75r-vx73-82pj (dev)",
+   "fast-uri@3.1.8 GHSA-333x-w4r6-6crp (dev)",
+   "fast-uri@3.1.8 GHSA-w74x-v6f9-j3xg (dev)",
+   "fast-uri@3.1.8 GHSA-wjr9-j795-jxcr (dev)",
+   "fast-uri@3.1.8 GHSA-xhq7-xmqj-769h (dev)",
+   "minimatch@10.2.6 GHSA-g3hv-75wg-m249 (dev)",
+   "systeminformation@5.33.15 GHSA-3f7j-7jwc-fxfj (dev)"
+  ],
+  "trivySeulementNpm": [
+   "sanitize-html@1.4.2 NSWG-ECO-154 MEDIUM"
+  ]
+ }
+}
