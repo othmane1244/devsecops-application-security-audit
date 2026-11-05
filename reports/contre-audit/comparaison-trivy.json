@@ -1,0 +1,92 @@
+{
+ "avant": {
+  "fichier": "reports/trivy-image-v20.3.0-rescan.json",
+  "image": "sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c",
+  "cree": "2026-11-04T20:40:21.416536164Z",
+  "total": 124,
+  "CRITICAL": 11,
+  "HIGH": 32,
+  "MEDIUM": 69,
+  "LOW": 11,
+  "UNKNOWN": 1
+ },
+ "apres": {
+  "fichier": "reports/trivy-image-corrige.json",
+  "image": "sha256:e250af150ea435fbf88757d976ecc962e4cc54ae0194e611370a9105b816c37d",
+  "cree": "2026-11-04T21:10:37.446585107Z",
+  "total": 105,
+  "CRITICAL": 9,
+  "HIGH": 22,
+  "MEDIUM": 62,
+  "LOW": 11,
+  "UNKNOWN": 1
+ },
+ "supprimees": {
+  "total": 19,
+  "CRITICAL": 2,
+  "HIGH": 10,
+  "MEDIUM": 7,
+  "LOW": 0,
+  "UNKNOWN": 0
+ },
+ "ajoutees": {
+  "total": 0,
+  "CRITICAL": 0,
+  "HIGH": 0,
+  "MEDIUM": 0,
+  "LOW": 0,
+  "UNKNOWN": 0
+ },
+ "paquetsSurveilles": {
+  "jsonwebtoken": {
+   "avant": [
+    "CVE-2015-9235 CRITICAL 0.1.0",
+    "CVE-2022-23539 HIGH 0.1.0",
+    "NSWG-ECO-17 HIGH 0.1.0",
+    "CVE-2022-23540 MEDIUM 0.1.0",
+    "CVE-2022-23541 MEDIUM 0.1.0",
+    "CVE-2015-9235 CRITICAL 0.4.0",
+    "CVE-2022-23539 HIGH 0.4.0",
+    "NSWG-ECO-17 HIGH 0.4.0",
+    "CVE-2022-23540 MEDIUM 0.4.0",
+    "CVE-2022-23541 MEDIUM 0.4.0"
+   ],
+   "apres": []
+  },
+  "jws": {
+   "avant": [
+    "CVE-2016-1000223 HIGH 0.2.6",
+    "CVE-2025-65945 HIGH 0.2.6"
+   ],
+   "apres": []
+  },
+  "express-jwt": {
+   "avant": [
+    "CVE-2020-15084 HIGH 0.1.3"
+   ],
+   "apres": []
+  },
+  "file-type": {
+   "avant": [
+    "CVE-2026-31808 MEDIUM 16.5.4"
+   ],
+   "apres": []
+  },
+  "moment": {
+   "avant": [
+    "CVE-2017-18214 HIGH 2.0.0",
+    "CVE-2022-24785 HIGH 2.0.0",
+    "CVE-2016-4055 MEDIUM 2.0.0"
+   ],
+   "apres": []
+  },
+  "base64url": {
+   "avant": [
+    "NSWG-ECO-428 HIGH 0.0.6",
+    "GHSA-rvg8-pwq2-xj7q MEDIUM 0.0.6"
+   ],
+   "apres": []
+  }
+ },
+ "detailAjoutees": []
+}

@@ -1,0 +1,71 @@
+{
+ "avant": {
+  "fichier": "reports/trivy-image-initial.json",
+  "image": "sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c",
+  "cree": "2026-10-20T11:28:17.521956103Z",
+  "total": 98,
+  "CRITICAL": 11,
+  "HIGH": 27,
+  "MEDIUM": 49,
+  "LOW": 11,
+  "UNKNOWN": 0
+ },
+ "apres": {
+  "fichier": "reports/trivy-image-v20.3.0-rescan.json",
+  "image": "sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c",
+  "cree": "2026-11-04T20:40:21.416536164Z",
+  "total": 124,
+  "CRITICAL": 11,
+  "HIGH": 32,
+  "MEDIUM": 69,
+  "LOW": 11,
+  "UNKNOWN": 1
+ },
+ "supprimees": {
+  "total": 2,
+  "CRITICAL": 0,
+  "HIGH": 1,
+  "MEDIUM": 1,
+  "LOW": 0,
+  "UNKNOWN": 0
+ },
+ "ajoutees": {
+  "total": 28,
+  "CRITICAL": 0,
+  "HIGH": 6,
+  "MEDIUM": 21,
+  "LOW": 0,
+  "UNKNOWN": 1
+ },
+ "paquetsSurveilles": {},
+ "detailAjoutees": [
+  "UNKNOWN DSA-6572-1 ca-certificates@20250419 (corrige: 20250419+deb13u1)",
+  "MEDIUM CVE-2026-114690 gcc-14-base@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-114691 gcc-14-base@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-115455 gcc-14-base@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-84243 libc6@2.41-12+deb13u4 (corrige: -)",
+  "MEDIUM CVE-2026-114690 libgcc-s1@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-114691 libgcc-s1@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-115455 libgcc-s1@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-114690 libgomp1@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-114691 libgomp1@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-115455 libgomp1@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-114690 libstdc++6@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-114691 libstdc++6@14.2.0-19 (corrige: -)",
+  "MEDIUM CVE-2026-115455 libstdc++6@14.2.0-19 (corrige: -)",
+  "HIGH CVE-2026-111181 body-parser@1.20.8 (corrige: 2.4.0, 1.20.9)",
+  "HIGH CVE-2026-118664 decode-uri-component@0.2.2 (corrige: 0.5.1)",
+  "MEDIUM CVE-2026-118773 glob@10.5.0 (corrige: 14.0.2)",
+  "MEDIUM CVE-2021-32822 hbs@4.3.1 (corrige: -)",
+  "MEDIUM CVE-2026-118764 minimatch@9.0.9 (corrige: 11.0.1)",
+  "HIGH CVE-2026-113872 multer@2.4.0 (corrige: 2.5.0)",
+  "MEDIUM CVE-2026-110816 qs@6.16.0 (corrige: 6.16.1)",
+  "MEDIUM CVE-2026-113654 sanitize-html@1.4.2 (corrige: 2.18.0)",
+  "MEDIUM CVE-2026-113661 sanitize-html@1.4.2 (corrige: 2.18.0)",
+  "HIGH CVE-2026-109383 undici@6.29.0 (corrige: 6.29.1, 7.30.1, 8.12.2)",
+  "HIGH CVE-2026-109869 undici@6.29.0 (corrige: 6.29.1, 7.30.1, 8.12.2)",
+  "HIGH CVE-2026-87018 undici@6.29.0 (corrige: 6.29.1, 7.30.1, 8.12.2)",
+  "MEDIUM CVE-2026-109924 undici@6.29.0 (corrige: 6.29.1, 7.30.1, 8.12.2)",
+  "MEDIUM CVE-2026-109932 undici@6.29.0 (corrige: 6.29.1, 7.30.1, 8.12.2)"
+ ]
+}
