@@ -8,6 +8,16 @@ leurs effets.
 
 Les contrôles initiaux Trivy sont documentés. Le rapport de vulnérabilités comporte 98 occurrences (11 CRITICAL, 27 HIGH, 49 MEDIUM et 11 LOW); le rapport filtré regroupe les 38 occurrences CRITICAL/HIGH. Le contrôle distinct de mauvaises configurations compte 66 occurrences dans l’arbre Juice Shop, dont 48 dans des exemples pédagogiques. Ces comptes ne représentent ni des risques tous applicables ni des exploitations confirmées. Les contrôles de secrets ont également été réalisés; leurs résultats partageables sont expurgés. L’audit reste ouvert.
 
+**Constats confirmés (fiches dans [docs/findings](docs/findings/)) :**
+
+| ID | Constat | Priorité |
+|---|---|---|
+| [F-002](docs/findings/F-002-cle-privee-jwt-codee-en-dur.md) | Clé privée JWT RSA 1024 bits codée en dur, paire de `jwt.pub` vérifiée : signature de jetons arbitraires possible. | P1 |
+| [F-003](docs/findings/F-003-jetons-sans-expiration.md) | `expiresIn` ignoré par `jsonwebtoken@0.4.0` : jetons sans expiration. | P2 |
+| [F-001](docs/findings/F-001-jwt-algorithm-confusion.md) | Vérification JWT sans liste d’algorithmes avec des versions affectées par CVE-2015-9235. | P1 (exploitation non démontrée) |
+
+La suite du travail (Jit, corrections, contre-audit, pipeline) est décrite dans la [feuille de route](docs/feuille-de-route.md).
+
 ## Objectif et périmètre
 
 - Application cible : OWASP Juice Shop.
@@ -23,10 +33,12 @@ méthode d’audit, l’analyse, les corrections ciblées et l’automatisation.
 Image locale auditée : `bkimminich/juice-shop:v20.3.0`, Linux/amd64,
 24 couches. Docker indique localement l’ID/RepoDigest
 `sha256:cea5a4af4aacee498c491491af0408934ec81d004035c0a02ef3e54395e3bf27`.
-Le digest de configuration OCI associé au rapport initial est différent
-(`sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c`),
-malgré les couches communes. Cette limite d’identité est détaillée dans
-les [analyses](docs/analysis/20-bilan-scan-initial.md) et le [rapport SBOM](docs/sbom/README.md).
+Cette valeur est le digest de l’**index OCI** multi-plateforme (Docker
+Desktop utilise le stockage containerd). Son manifeste `linux/amd64`
+(`sha256:590a4516…`) a pour configuration
+`sha256:40606cfb23b8937b60c1cab5a5980362e0a372223c1f86f6c3e68c1b003a823c`,
+qui est l’`ImageID` des rapports Trivy et du SBOM : il s’agit bien de la même
+image. Voir [identite-image.md](docs/identite-image.md).
 
 ## 1. Récupérer le dépôt
 

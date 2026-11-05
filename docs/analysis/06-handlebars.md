@@ -83,4 +83,13 @@ Les extraits ci-dessous renvoient aux lignes inspectées dans l’image. Aucun a
 
 L’image contient Handlebars 4.7.9 derrière le moteur hbs. L’option allowProtoMethodsByDefault est activée par défaut. Pour dataErasure, la vue principale est constante, mais req.body.layout est transmis dans les locals puis interprété par HBS comme chemin du layout. L’avis CVE-2026-106445 reste à approfondir, car le contrôle du contenu du fichier et le contexte nécessaire ne sont pas établis. Les prérequis AST de CVE-2026-106446 et le pipeline precompile puis insertion dans script de CVE-2026-106444 ne sont pas observés dans ce parcours.
 
+### Piste à vérifier — fichiers inscriptibles par un utilisateur (ajout du 4 novembre 2026)
+
+La conclusion « aucun moyen d’écriture de fichier sélectionnable » doit être réexaminée. Les sources publiées v20.3.0 montrent deux routes authentifiées qui écrivent un fichier à un chemin prévisible :
+
+- `routes/profileImageFileUpload.ts:40-42` écrit le buffer reçu dans `frontend/dist/frontend/assets/public/images/uploads/<id>.<ext>`, après détection d’un type image par `file-type` (voir [13](13-file-type.md)); seuls les premiers octets doivent correspondre à une signature image.
+- `routes/profileImageUrlUpload.ts:28-29` écrit **le contenu téléchargé depuis une URL fournie par l’utilisateur**, sans contrôle de type, dans `…/uploads/<id>.<jpg|jpeg|png|svg|gif>`.
+
+Le chemin de layout de `dataErasure` est joint à la racine des vues par HBS (H-09) et le filtre de sous-chaînes de la branche challenge ne vise que `ftp`, `ctf.key` et `encryptionkeys`. Si un tel fichier peut être sélectionné comme layout, l’utilisateur contrôlerait le **contenu** du modèle compilé, prérequis manquant de CVE-2026-106445. À vérifier statiquement : chemin relatif depuis `views/`, gestion de l’extension par HBS, et activation de la route URL selon le profil. Aucune requête n’a été envoyée; il s’agit d’une hypothèse, pas d’un constat.
+
 Constat applicatif distinct HBS-APP-01 : contrôle de chemin observé statiquement ; lecture arbitraire et exploitation non démontrées. La configuration runtime effective et les autres possibilités d’écriture de fichiers restent inconnues; les conclusions restent limitées aux sources inspectées. La présence d’une version vulnérable ne démontre pas à elle seule l’exploitation.
