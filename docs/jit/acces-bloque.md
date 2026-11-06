@@ -1,10 +1,19 @@
 # Jit inaccessible — constat et solution retenue
 
-Rédigé le 5 novembre 2026. **Jit n’a jamais été connecté** dans cet audit :
-la [procédure de connexion](procedure-connexion-fork.md) n’a pas pu être
+Rédigé le 5 novembre 2026, mis à jour le 6 novembre 2026.
+
+> **Statut de P4 : réalisée par substitution validée par le professeur le
+> 6 novembre 2026.** Le professeur a accepté la reproduction open source du
+> plan Jit comme substitut à Jit. La validation a été communiquée par le
+> responsable de l’audit ; sa trace écrite est à joindre au dossier.
+
+**Jit n’a jamais été connecté** dans cet audit : la
+[procédure de connexion](procedure-connexion-fork.md) n’a pas pu être
 exécutée. Les contrôles de son plan « Minimal Viable Security » ont été
 **reproduits avec les outils open source qu’il orchestrait**
-([comparaison](comparaison-trivy-plan-jit.md)). Ce n’est **pas** Jit.
+([comparaison](comparaison-trivy-plan-jit.md)). Ce n’est **pas** Jit : la
+substitution validée porte sur les contrôles, pas sur les fonctions propres
+à la plateforme (section 3).
 
 ## 1. Constat technique
 
@@ -72,7 +81,7 @@ leur contenu n’a pas été archivé.
 | Élément prévu | Situation |
 |---|---|
 | Connexion de l’app GitHub Jit au fork | Impossible. Rien n’a été installé, aucune permission accordée, aucune donnée transmise à Jit. |
-| Plan « Minimal Viable Security » | **Reproduit** par le workflow `.github/workflows/plan-jit-oss.yml` du fork, avec les outils que Jit documentait pour ce plan : Semgrep (SAST), OSV-Scanner (SCA), Gitleaks (secrets), KICS (IaC), Trivy (Dockerfile). |
+| Plan « Minimal Viable Security » | **Reproduit**, substitution validée par le professeur le 6 novembre 2026, par le workflow `.github/workflows/plan-jit-oss.yml` du fork, avec les outils que Jit documentait pour ce plan : Semgrep (SAST), OSV-Scanner (SCA), Gitleaks (secrets), KICS (IaC), Trivy (Dockerfile). |
 | Fonctions propres à Jit | **Non reproduites** : backlog centralisé, déduplication et priorisation des constats entre outils, contexte d’exécution (« context graph »), PR de remédiation, contrôles de posture GitHub. |
 | Export CSV du backlog | Remplacé par les SARIF (onglet Security du fork) et les JSON en artefacts, copiés dans `reports/plan-jit-oss/`. |
 
