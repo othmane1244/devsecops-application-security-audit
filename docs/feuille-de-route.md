@@ -11,7 +11,7 @@ Jit, les corrections avec contre-audit et l’automatisation.
 |---|---|
 | P3 — Scans Trivy | Fait : vulnérabilités, SBOM, secrets, configurations. |
 | P5 — Analyse et priorités | Fait : fiches 01–21, constats F-001 à F-003. |
-| P4 — Intégration Jit réelle | **Bloquée** : jit.io inaccessible ([constat](jit/acces-bloque.md)). **Remplacée** par la reproduction open source de son plan « Minimal Viable Security » sur le fork ([comparaison](jit/comparaison-trivy-plan-jit.md)). |
+| P4 — Intégration Jit réelle | **Réalisée par substitution validée par le professeur le 6 novembre 2026** : jit.io inaccessible ([constat](jit/acces-bloque.md)); plan « Minimal Viable Security » reproduit avec les outils open source qu’il orchestrait ([comparaison](jit/comparaison-trivy-plan-jit.md)). |
 | P6 — Corrections et contre-audit | **En partie fait** : F-001 à F-003, `file-type`, `HEALTHCHECK` corrigés et vérifiés ([contre-audit](contre-audit.md)). Dépendances et image de base verrouillées sur `v20.3.0`. Reste `sanitize-html`. |
 | CI/CD et protection de branche | **En partie fait** : workflow Trivy bloquant les nouvelles CRITICAL/HIGH ([contre-audit, section 6](contre-audit.md#6-contrôle-ci--ne-bloquer-que-les-nouvelles-criticalhigh)). Reste la protection de branche. |
 | P7 — AuditTrace | Facultatif; à sacrifier en premier si le temps manque. |
