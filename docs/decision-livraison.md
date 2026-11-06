@@ -18,7 +18,8 @@ autorisées à suivre), **critères satisfaits sur le périmètre**.
 
 | Critère du plan | Condition attendue | Résultat | Preuve |
 |---|---|---|---|
-| Validité de l’audit | Tous les contrôles obligatoires terminés et rattachés à la bonne version | **Partiellement satisfait**. Trivy : complet et rattaché aux bonnes images (ImageID vérifiés). **Jit (P4) : réalisé par substitution validée par le professeur le 6 novembre 2026** (reproduction open source du plan, rattachée à `audit/base-v20.3.0` et `audit/corrections`). Protection de branche avec tentative réelle de fusion bloquée (P4.5) : **non réalisée**. | [identite-image](identite-image.md), [contre-audit § 1](contre-audit.md#1-ce-qui-a-été-comparé), [acces-bloque](jit/acces-bloque.md), [comparaison](jit/comparaison-trivy-plan-jit.md) |
+| Validité de l’audit | Tous les contrôles obligatoires terminés et rattachés à la bonne version | **Satisfait**. Trivy : complet et rattaché aux bonnes images (ImageID vérifiés). **Jit (P4) : réalisé par substitution validée par le professeur le 6 novembre 2026** (reproduction open source du plan, rattachée à `audit/base-v20.3.0` et `audit/corrections`). **Protection de branche (P4.5) : démontrée le 6 novembre 2026** (voir T06). | [identite-image](identite-image.md), [contre-audit § 1](contre-audit.md#1-ce-qui-a-été-comparé), [acces-bloque](jit/acces-bloque.md), [comparaison](jit/comparaison-trivy-plan-jit.md), [demonstration-blocage](demonstration-blocage.md) |
+| T06 — Régression (cas T06 du plan) | Une modification réintroduisant une dépendance vulnérable fait échouer le contrôle obligatoire | **Satisfait** : la PR de test (retour à `jsonwebtoken` 0.4.0) fait échouer les 2 checks obligatoires d’« Audit Trivy » (6 alertes, dont CVE-2015-9235 CRITICAL). La fusion tentée par un administrateur est **refusée** (HTTP 405). PR fermée sans fusion, branche supprimée. | [demonstration-blocage](demonstration-blocage.md), [`reports/demonstration-blocage/`](../reports/demonstration-blocage/) |
 | Défauts bloquants | Aucun défaut confirmé bloquant sans traitement autorisé | **Satisfait pour une cible d’entraînement, non satisfait pour une exposition réelle** (section 4) | [contre-audit § 7](contre-audit.md#7-risques-résiduels-acceptés), [comparaison § 6](jit/comparaison-trivy-plan-jit.md#6-effet-sur-la-décision-de-livraison) |
 | Fonctionnement | Le parcours vérifié fonctionne après modification | **Satisfait** : connexion, `whoami`, panier, envoi d’image identiques avant/après; tests serveur 417/417 et API 545/545 | [contre-audit § 3](contre-audit.md#3-non-régression-fonctionnelle) |
 | Exceptions | Motif, responsable, périmètre et échéance pour chacune | **Satisfait** : 28 exceptions dans `.trivyignore.yaml`, chacune avec motif (fiche ou tri), périmètre (purl), échéance (31 décembre 2026), acceptées par le responsable de l’audit le 4 novembre 2026. Le responsable n’est pas écrit dans chaque entrée, mais dans le contre-audit. | [contre-audit § 6–7](contre-audit.md#6-contrôle-ci--ne-bloquer-que-les-nouvelles-criticalhigh), [`.trivyignore.yaml`](https://github.com/othmane1244/juice-shop/blob/audit/corrections/.trivyignore.yaml) |
@@ -113,12 +114,20 @@ documentés. Les corrections de l’audit (F-001 à F-003, `file-type`,
 `HEALTHCHECK`) sont vérifiées sans régression fonctionnelle. Les exceptions
 ont un motif, un périmètre, un responsable et une échéance.
 
-**Réserve sur la validité.** La tâche Jit est réalisée par substitution
-validée par le professeur le 6 novembre 2026. En revanche, la protection de
-branche n’a pas été démontrée par une tentative réelle. Selon les termes du
-plan, le verdict est donc **limité à la configuration démontrée**. Il doit
-être présenté comme un audit « Trivy et plan Jit reproduit », pas comme un
-audit réalisé avec la plateforme Jit.
+**Validité.** Les contrôles obligatoires sont terminés :
+- Trivy ;
+- Jit par substitution validée par le professeur le 6 novembre 2026 ;
+- protection de branche démontrée par un refus réel de fusion (T06).
+
+L’audit est donc **valide**. Selon les issues prévues par le plan, le
+verdict est :
+- **livraison bloquée** pour l’exposition réelle ;
+- **sous conditions** pour la cible d’entraînement isolée.
+
+Il doit être présenté comme un audit « Trivy et plan Jit reproduit », pas
+comme un audit réalisé avec la plateforme Jit. Les limites du blocage
+(propriétaire administrateur, vulnérabilités sans correctif) sont décrites
+dans la [démonstration](demonstration-blocage.md#5-limites).
 
 ## 6. Conditions
 
@@ -137,9 +146,14 @@ audit réalisé avec la plateforme Jit.
 1. ~~Obtenir l’accès à Jit, ou faire valider par le professeur la
    reproduction open source comme ajustement de P4.~~ **Fait le 6 novembre
    2026** (validation du professeur ; trace écrite à joindre).
-2. Activer la **protection de branche** sur `audit/corrections`, avec
+2. ~~Activer la protection de branche sur `audit/corrections`, avec
    « Audit Trivy » obligatoire, et démontrer qu’une PR qui réintroduit une
-   dépendance vulnérable est **refusée** (cas T06 du plan).
+   dépendance vulnérable est refusée (cas T06 du plan).~~ **Fait le
+   6 novembre 2026** ([démonstration](demonstration-blocage.md)).
+
+Ces deux conditions étant remplies, la réserve de validité est levée.
+Pour la maintenir : garder la protection active et ne pas ajouter
+d’exception au `.trivyignore.yaml` sans motif, responsable et échéance.
 
 ### Pour passer à « livrable en exposition réelle »
 

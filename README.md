@@ -17,12 +17,12 @@ et décision de livraison argumentée.
 | Corrections et contre-audit | **Fait** sur le fork [`othmane1244/juice-shop`](https://github.com/othmane1244/juice-shop/tree/audit/corrections) : 124 → 105 détections, 19 supprimées toutes par les corrections; attaques JWT 200 → 401; tests 417/417 et 545/545 |
 | CI | **Fait** : contrôle Trivy bloquant sur les nouvelles CRITICAL/HIGH, ligne de base de 28 exceptions justifiées (échéance 31 décembre 2026) |
 | Jit (P4) | **Réalisé par substitution validée par le professeur le 6 novembre 2026** : jit.io étant inaccessible ([constat](docs/jit/acces-bloque.md)), le plan « Minimal Viable Security » est reproduit avec Semgrep, OSV-Scanner, Gitleaks, KICS et Trivy ([comparaison](docs/jit/comparaison-trivy-plan-jit.md)). Les résultats sont ceux de ces outils, pas de la plateforme Jit. |
-| Protection de branche avec refus démontré d’une PR | **Non fait** |
+| Protection de branche avec refus démontré d’une PR (P4.5, T06) | **Fait** le 6 novembre 2026 : `audit/corrections` protégée, checks « Audit Trivy » obligatoires, administrateurs inclus. Une PR réintroduisant `jsonwebtoken` 0.4.0 échoue, et sa fusion est refusée (HTTP 405). Voir la [démonstration](docs/demonstration-blocage.md). |
 | AuditTrace, versions A/B/C (EventLab) | **Hors périmètre** : remplacés par Juice Shop (voir [feuille de route](docs/feuille-de-route.md)) |
 
 ## Parcours de lecture pour le jury
 
-Environ une heure en lisant les étapes 1 à 6; les fiches de l’étape 7 se
+Environ une heure en lisant les étapes 1 à 7; les fiches de l’étape 8 se
 consultent à la demande.
 
 1. **[Décision de livraison](docs/decision-livraison.md)** : critères du
@@ -41,10 +41,12 @@ consultent à la demande.
 5. **[Contre-audit](docs/contre-audit.md)** : corrections vérifiées,
    avant/après Trivy à périmètre constant, écart 98 → 124, CI, workflows,
    risques acceptés.
-6. **Jit (substitution validée)** : [accès bloqué et validation](docs/jit/acces-bloque.md), puis
+6. **[Démonstration du blocage](docs/demonstration-blocage.md)** : une PR
+   qui réintroduit une dépendance vulnérable est refusée (P4.5, cas T06).
+7. **Jit (substitution validée)** : [accès bloqué et validation](docs/jit/acces-bloque.md), puis
    [comparaison Trivy / plan Jit reproduit](docs/jit/comparaison-trivy-plan-jit.md)
    (ce que Semgrep trouve dans le code et que Trivy ne voit pas).
-7. **À la demande** :
+8. **À la demande** :
    - fiches par paquet [01](docs/analysis/01-authentification.md) à
      [19](docs/analysis/19-paquets-debian.md), en commençant par
      [01 authentification](docs/analysis/01-authentification.md),
@@ -77,6 +79,10 @@ consultent à la demande.
 | Modules chargés à l’exécution | [reports/contre-audit/modules-charges-execution.json](reports/contre-audit/modules-charges-execution.json) | [22](docs/analysis/22-nouvelles-detections.md) |
 | Plan Jit reproduit : résultats par branche et par outil (SARIF, JSON; secrets expurgés) | [reports/plan-jit-oss/](reports/plan-jit-oss/) | [comparaison](docs/jit/comparaison-trivy-plan-jit.md) |
 | Plan Jit reproduit : synthèse chiffrée | [reports/plan-jit-oss/synthese.json](reports/plan-jit-oss/synthese.json) | idem |
+| Protection de branche relue par l’API | [reports/demonstration-blocage/protection-audit-corrections.json](reports/demonstration-blocage/protection-audit-corrections.json) | [démonstration du blocage](docs/demonstration-blocage.md) |
+| Run « Audit Trivy » en échec sur la PR T06 | [reports/demonstration-blocage/run-audit-trivy-t06.json](reports/demonstration-blocage/run-audit-trivy-t06.json) | idem |
+| Fusion refusée (HTTP 405) | [reports/demonstration-blocage/tentative-fusion.json](reports/demonstration-blocage/tentative-fusion.json) | idem |
+| PR T06 fermée sans fusion | [reports/demonstration-blocage/pr-3-t06.json](reports/demonstration-blocage/pr-3-t06.json) | idem |
 
 Les sorties brutes des contrôles de secrets restent hors du dépôt; seuls les
 rapports expurgés sont versionnés. Les exports bruts Jit éventuels iraient
