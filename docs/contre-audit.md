@@ -221,23 +221,32 @@ Le fork contient 16 workflows : `audit-trivy.yml` et les 15 du dépôt
 | `ci.yml` (CI/CD Pipeline) | **désactivé** (`gh workflow disable`), run en cours annulé | Pipeline amont : tests, publication et déploiement prévus pour `juice-shop/juice-shop`; ses tests de défis JWT échouent par construction. |
 | `lint-fixer.yml` | **désactivé** | Peut **committer** sur la branche poussée (`git-auto-commit-action`). |
 
-Les 12 autres fichiers ne se sont jamais déclenchés : GitHub ne les a pas
-enregistrés et l’API ne permet pas de désactiver un workflow non
-enregistré. Leurs déclencheurs ne surviennent pas dans l’usage prévu du
-fork :
+Le 4 novembre, les 12 autres fichiers n’étaient pas enregistrés par GitHub,
+et l’API ne permet pas de désactiver un workflow non enregistré. Ce
+document indiquait alors que leurs déclencheurs ne surviendraient pas et que
+les planifications étaient désactivées sur un fork. **C’était faux** :
 
-| Workflows | Déclencheur | Situation dans le fork |
-|---|---|---|
-| `release.yml`, `frontend-bundle-analysis.yml` | tag `v*` | Aucun tag poussé. |
-| `update-news-www*.yml` | publication d’une release | Aucune release. |
-| `update-challenges-*.yml` | push sur `master`/`develop` modifiant les défis | Jobs conditionnés à `github.repository == 'juice-shop/juice-shop'`. |
-| `image_actions.yml` | PR touchant des images, push sur `master`/`develop` | Pas de modification d’images prévue. |
-| `lock.yml`, `stale.yml` | planification | Planifications désactivées par défaut sur les forks. |
-| `pr-compliance.yml` | `pull_request_target` (PR ouverte/modifiée) | **Se lancera à la première PR dans le fork** : à désactiver dès son enregistrement. |
-| `rebase.yml` | commentaire d’issue/PR | Idem. |
+- le 5 novembre, le passage de la branche par défaut à `audit/corrections`
+  (préparation de Jit) a enregistré **tous** les workflows hérités;
+- les workflows planifiés « Close stale issues and PR » et « Lock Threads »
+  se sont **exécutés** (sans effet constaté : aucune issue ni PR verrouillée
+  ou marquée périmée);
+- à l’ouverture de la PR [#1 du fork](https://github.com/othmane1244/juice-shop/pull/1),
+  « PR Compliance Check » (`pull_request_target`) l’a **fermée**, lui a
+  ajouté les labels `invalid` et `spam` et a posté un commentaire de refus.
+  La PR a été rouverte et les labels retirés; le commentaire du bot est
+  conservé comme trace.
 
-Procédure : après la première PR, `gh workflow list -R othmane1244/juice-shop --all`
-puis `gh workflow disable <id>` pour chaque workflow hérité apparu.
+Le 5 novembre 2026, **tous les workflows hérités sauf CodeQL sont
+désactivés** (`gh workflow disable`, 14 workflows sur 15). Restent actifs :
+
+| Workflow | Rôle |
+|---|---|
+| `audit-trivy.yml` | Contrôle bloquant de l’audit (Trivy). |
+| `codeql-analysis.yml` | SAST complémentaire, alertes dans l’onglet Security. |
+| `plan-jit-oss.yml` | Reproduction open source du plan Jit, non bloquante ([comparaison](jit/comparaison-trivy-plan-jit.md)). |
+
+Contrôle : `gh api repos/othmane1244/juice-shop/actions/workflows --jq '.workflows[] | [.state,.name] | @tsv'`.
 
 ## 7. Risques résiduels acceptés
 

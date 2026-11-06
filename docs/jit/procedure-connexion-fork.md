@@ -1,5 +1,10 @@
 # Procédure — connecter Jit au seul fork `othmane1244/juice-shop`
 
+> **Non exécutée.** Le 5 novembre 2026, jit.io est inaccessible : voir
+> [acces-bloque.md](acces-bloque.md). Le plan a été reproduit avec des outils
+> open source ([comparaison](comparaison-trivy-plan-jit.md)). Cette
+> procédure reste valable si le service redevient disponible.
+
 Préparée le 4 novembre 2026, à exécuter par le responsable de l’audit. Elle
 complète l’étude [README.md](README.md) (29 octobre) et en applique les
 règles. **Rien n’a été connecté** à la date de rédaction.
